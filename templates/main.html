@@ -4,8 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="../static/css/header.css">
 </head>
 <body>
-    <h1>Hello, world!</h1>
+    <header>
+        <!-- ЛЕВАЯ ЧАСТЬ: только заголовок -->
+        <div class="header-left">
+            <h1>Расписание транспорта</h1>
+        </div>
+
+        <!-- ПРАВАЯ ЧАСТЬ: все элементы в ОДНУ ЛИНИЮ (горизонтально) -->
+        <div class="header-right">
+            <!-- Блок 1: надпись + две кнопки (Откуда и Куда) -->
+            <div class="form-group">
+                <div>Выберите город(а):</div>
+                <div class="button-group">
+                    <input type="text" placeholder="Откуда">
+                    <input type="text" placeholder="Куда">
+                </div>
+            </div>
+
+            <!-- Блок 2: надпись + кнопка (Когда) -->
+            <div class="form-group">
+                <div>Выберите дату:</div>
+                <button>Когда</button>
+            </div>
+
+            <!-- Блок 3: надпись + кнопка (Тип) -->
+            <div class="form-group">
+                <div>Выберите тип транспорта:</div>
+                <select name="" id="">
+                    <option value="" selected>Автобус</option>
+                    <option value="">Электричка</option>
+                    <option value="">Поезд</option>
+                </select>
+            </div>
+
+            <!-- Блок 4: просто кнопка (Найти) -->
+            <div class="find-btn">
+                <button>Найти</button>
+            </div>
+
+            <!-- Блок 5: надпись + кнопка (Профиль) -->
+            <div class="profile-btn">
+                <div>Войти в профиль (для сотрудников):</div>
+                <button><img src="../static/images/Профиль.svg" alt=""></button>
+            </div>
+        </div>
+    </header>
+    <main>
+
+    </main>
 </body>
 </html>

@@ -1,0 +1,115 @@
+/* ПРОСТЫЕ СТИЛИ - ТОЛЬКО РАСПОЛОЖЕНИЕ */
+header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+.header-left {
+    margin-right: 50px;
+}
+
+.header-right {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+/* Каждый блок (надпись + её кнопка) - надпись СВЕРХУ, кнопка СНИЗУ */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+}
+
+/* Блок профиля */
+.profile-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+}
+
+.find-btn {
+    align-self: flex-end;
+}
+
+/* ОДИНАКОВЫЙ РАЗМЕР ДЛЯ ВСЕХ ИНТЕРАКТИВНЫХ ЭЛЕМЕНТОВ */
+/* Поля ввода, кнопки (кроме профиля), выпадающий список */
+input,
+button:not(.profile-btn button),
+select {
+    width: 150px;        /* Одинаковая ширина */
+    height: 35px;        /* Одинаковая высота */
+    padding: 5px 10px;
+    box-sizing: border-box; /* Чтобы padding не увеличивал размер */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Специально для кнопки "Найти" - делаем её шире (опционально) */
+.find-btn button {
+    width: 100px;        /* Можно оставить 150px или сделать меньше */
+    height: 35px;
+}
+
+/* Кнопка профиля - ТОЛЬКО ВЫСОТА, ширина по содержимому */
+.profile-btn button {
+    width: auto;          /* Автоматическая ширина */
+    min-width: 30px;      /* Минимальная ширина 30px */
+    height: 35px;         /* Такая же высота, как у других */
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-btn button img {
+    height: 100%;         /* Высота по кнопке */
+    width: auto;          /* Ширина автоматическая для сохранения пропорций */
+    object-fit: contain;
+}
+
+/* Группа для горизонтальных кнопок (откуда/куда) */
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.button-group input {
+    width: 150px;         /* Оба поля ввода одинаковой ширины */
+}
+
+/* Глобальные стили для кнопок */
+button {
+    cursor: pointer;
+    white-space: nowrap;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Сбрасываем стили для кнопки профиля */
+.profile-btn button {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+h1 {
+    margin: 0;
+    font-size: 24px;
+    white-space: nowrap;
+}
+
+body {
+    margin: 0;
+}
