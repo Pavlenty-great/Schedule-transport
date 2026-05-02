@@ -6,6 +6,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="../static/css/header.css">
     <link rel="stylesheet" href="../static/css/main_flights.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 <body>
     <header>
@@ -24,9 +25,12 @@
             </div>
 
             <!-- Блок 2: надпись + кнопка (Когда) -->
-            <div class="form-group">
+            <div class="form-group date-group">
                 <div>Выберите дату:</div>
-                <button>Когда</button>
+                <div class="date-wrapper">
+                    <button type="button" id="dateButton">Когда</button>
+                    <input type="text" id="datePicker" style="display: none;">
+                </div>
             </div>
 
             <!-- Блок 3: надпись + кнопка (Тип) -->
@@ -81,5 +85,9 @@
         </div>
     </div>
     </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+    <script src="../static/js/calendar.js"></script>
 </body>
 </html>
