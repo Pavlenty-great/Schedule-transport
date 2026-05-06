@@ -14,13 +14,13 @@
             <h1>Расписание транспорта</h1>
         </div>
 
-        <div class="header-right">
+        <form method="POST" action="/" class="header-right">
             <!-- Блок 1: надпись + две кнопки (Откуда и Куда) -->
             <div class="form-group">
                 <div>Выберите город(а):</div>
                 <div class="button-group">
-                    <input type="text" placeholder="Откуда">
-                    <input type="text" placeholder="Куда">
+                    <input type="text" name="from" placeholder="Откуда" value="{{ search.from }}">
+                    <input type="text" name="to" placeholder="Куда" value="{{ search.to }}">
                 </div>
             </div>
 
@@ -28,62 +28,82 @@
             <div class="form-group date-group">
                 <div>Выберите дату:</div>
                 <div class="date-wrapper">
-                    <button type="button" id="dateButton">Когда</button>
-                    <input type="text" id="datePicker" style="display: none;">
+                    <button type="button" id="dateButton">{% if search.date %}{{ search.date }}{% else %}Сегодня{% endif %}</button>
+                    <input type="text" id="datePicker" name="date" style="display: none;" value="{{ search.date }}">
                 </div>
             </div>
 
             <!-- Блок 3: надпись + кнопка (Тип) -->
             <div class="form-group">
                 <div>Выберите тип транспорта:</div>
-                <select name="" id="">
-                    <option value="" selected>Автобус</option>
-                    <option value="">Электричка</option>
-                    <option value="">Поезд</option>
+                <select name="transport_type">
+                    <option value="Автобус" {% if search.transport_type == 'Автобус' %}selected{% endif %}>Автобус</option>
                 </select>
             </div>
 
             <!-- Блок 4: просто кнопка (Найти) -->
             <div class="find-btn">
-                <button>Найти</button>
+                <button type="submit">Найти</button>
             </div>
 
             <!-- Блок 5: надпись + кнопка (Профиль) -->
             <div class="profile-btn">
                 <div>Войти в профиль (для сотрудников):</div>
-                <button><img src="../static/images/Профиль.svg" alt=""></button>
+                <button type="button"><img src="../static/images/Профиль.svg" alt=""></button>
             </div>
-        </div>
+        </form>
     </header>
+    
     <main>
         <div class="info-header">
-            <h5>Расписание рейсов из города отправления в город прибытия</h5>
-            <div class="date">Дата: 12.04.2026, суббота</div>
-        </div>
-    
-    <div class="route-card">
-        <img class="route-icon" src="../static/images/Автобус.jpg" alt="">
-        <div class="route-content">
-            <a href="" class="route-title">24 Талдом - Дубна</a>
-            <div class="route-details">
-                <div>06:35</div>
-                <div>Идет 60 минут</div>
-                <div>07:35</div>
+            <h5>
+                {% if search.from and search.to %}
+                    Расписание рейсов из {{ search.from }} в {{ search.to }}
+                {% else %}
+                    Расписание рейсов
+                {% endif %}
+            </h5>
+            <div class="date">
+                {% if display_date %}
+                    Дата: {{ display_date }}
+                {% elif search.date %}
+                    Дата: {{ search.date }}
+                {% else %}
+                    Дата: не выбрана
+                {% endif %}
             </div>
         </div>
-    </div>
 
-    <div class="route-card">
-        <img class="route-icon" src="../static/images/Автобус.jpg" alt="">
-        <div class="route-content">
-            <a href="" class="route-title">24 Талдом - Дубна</a>
-            <div class="route-details">
-                <div>06:35</div>
-                <div>Идет 60 минут</div>
-                <div>07:35</div>
+        {% if error_message %}
+            <div class="error-message" style="background-color: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828;">
+                {{ error_message }}
             </div>
-        </div>
-    </div>
+        {% endif %}
+
+        {% if routes %}
+            {% for route in routes %}
+            <div class="route-card">
+                <img class="route-icon" src="../static/images/Автобус.jpg" alt="">
+                <div class="route-content">
+                    <a href="" class="route-title">{{ route.route_number }} {{ route.route_name }}</a>
+                    <div class="route-details">
+                        <div>{{ route.departure_time }}</div>
+                        <div>Идет {{ route.travel_time_minutes|int }} минут</div>
+                        <div>{{ route.arrival_time }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% elif request.method == 'POST' and not error_message and search.from and search.to %}
+            <div class="no-results" style="text-align: center; padding: 40px; color: #666;">
+                <p>😕 По вашему запросу ничего не найдено</p>
+                <p>Попробуйте изменить параметры поиска</p>
+            </div>
+        {% elif request.method != 'POST' %}
+            <div class="welcome-message" style="text-align: center; padding: 40px; color: #666;">
+                <p>🚌 Введите пункты отправления и назначения, чтобы увидеть расписание</p>
+            </div>
+        {% endif %}
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
