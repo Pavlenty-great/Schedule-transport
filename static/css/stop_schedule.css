@@ -89,3 +89,29 @@ main {
     margin-bottom: 12px;
     display: inline-block;
 }
+
+/* Стили для ссылок времени отправления */
+.time-link {
+    color: #0077ff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.time-link:hover {
+    text-decoration: underline;
+    color: #0055cc;
+}
+
+/* Карточка рейса без подсветки */
+.route-card:hover {
+    background-color: transparent;
+}
+
+.route-content:hover {
+    background-color: transparent;
+}
+
+.route-title:hover {
+    color: #333;
+    text-decoration: none;
+}

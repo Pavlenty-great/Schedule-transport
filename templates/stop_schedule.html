@@ -14,7 +14,7 @@
     <main>
         <div class="info-header">
             <h5>
-                Расписание остановки {% if stop_info %}"{{ stop_info.stop_name }}"{% if stop_info.settlement_name %} ({{ stop_info.settlement_name }}){% endif %}{% endif %}
+                Расписание остановки{% if stop_info %}"{{ stop_info.stop_name }}"{% if stop_info.settlement_name %} ({{ stop_info.settlement_name }}){% endif %}{% endif %}
             </h5>
             <div class="date">
                 Дата: {{ display_date }}
@@ -28,23 +28,23 @@
         {% endif %}
 
         {% if schedule_data %}
-        {% for route in schedule_data %}
-        <div class="route-card">
-            <img class="route-icon" src="../static/images/Автобус.jpg" alt="{{ route.transport_type }}">
-            <div class="route-content">
-                <div class="route-title">
-                    {{ route.route_number }} {{ route.route_name }}
-                </div>
-                <div class="route-details">
-                    <div>Время отправления: 
-                        {% for time in route.departure_times %}
-                            {{ time }}{% if not loop.last %}, {% endif %}
-                        {% endfor %}
+            {% for route in schedule_data %}
+            <div class="route-card">
+                <img class="route-icon" src="../static/images/Автобус.jpg" alt="{{ route.transport_type }}">
+                <div class="route-content">
+                    <div class="route-title">
+                        {{ route.route_number }} {{ route.route_name }}
+                    </div>
+                    <div class="route-details">
+                        <div>Время отправления: 
+                            {% for time in route.departure_times %}
+                                <a href="/route/{{ route.route_id }}?date={{ date_str }}&day={{ weekday_id }}&trip={{ route.trip_numbers[loop.index0] }}&time={{ time }}" class="time-link">{{ time }}</a>{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
         {% else %}
             <div class="no-results">
                 <p>😕 Расписание для этой остановки на выбранную дату не найдено</p>
