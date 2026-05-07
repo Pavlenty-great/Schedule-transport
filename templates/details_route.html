@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали маршрута</title>
+    <link rel="stylesheet" href="../static/css/header.css">
+    <link rel="stylesheet" href="../static/css/details_route.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    {% include 'components/header.html' %}
+    
+    <main>
+        <div class="info-header">
+            <h5>
+                Маршрут транспорта №{{ route_info.route_number }} из {{ route_info.from_settlement }} в {{ route_info.to_settlement }}
+            </h5>
+            <div class="date">
+                Дата: {{ display_date }}
+            </div>
+        </div>
+
+        {% if error_message %}
+            <div class="error-message" style="background-color: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828;">
+                {{ error_message }}
+            </div>
+        {% endif %}
+
+        {% if route_details %}
+            <table class="route-table">
+                <thead>
+                    <tr>
+                        <th>Станция</th>
+                        <th>Отправление</th>
+                        <th>Время в пути</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in route_details %}
+                    <tr>
+                        <td>
+                            {{ detail.stop_name }}
+                            {% if detail.settlement_name %}
+                                <span class="settlement-name">({{ detail.settlement_name }})</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ detail.departure_time.strftime('%H:%M') if detail.departure_time else '--:--' }}</td>
+                        <td>
+                            {% if detail.time_from_start %}
+                                {{ detail.time_from_start|int }} минут
+                            {% else %}
+                                0 минут
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-results" style="text-align: center; padding: 40px; color: #666;">
+                <p>😕 Информация по маршруту не найдена</p>
+            </div>
+        {% endif %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+    <script src="../static/js/calendar.js"></script>
+</body>
+</html>

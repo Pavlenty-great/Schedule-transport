@@ -1,0 +1,44 @@
+<header>
+        <div class="header-left">
+            <h1>Расписание транспорта</h1>
+        </div>
+
+        <form method="POST" action="/" class="header-right">
+            <!-- Блок 1: надпись + две кнопки (Откуда и Куда) -->
+            <div class="form-group">
+                <div>Выберите город(а):</div>
+                <div class="button-group">
+                    <input type="text" name="from" placeholder="Откуда" value="{{ search.from }}">
+                    <input type="text" name="to" placeholder="Куда" value="{{ search.to }}">
+                </div>
+            </div>
+
+            <!-- Блок 2: надпись + кнопка (Когда) -->
+            <div class="form-group date-group">
+                <div>Выберите дату:</div>
+                <div class="date-wrapper">
+                    <button type="button" id="dateButton">{% if search.date %}{{ search.date }}{% else %}Сегодня{% endif %}</button>
+                    <input type="text" id="datePicker" name="date" style="display: none;" value="{{ search.date }}">
+                </div>
+            </div>
+
+            <!-- Блок 3: надпись + кнопка (Тип) -->
+            <div class="form-group">
+                <div>Выберите тип транспорта:</div>
+                <select name="transport_type">
+                    <option value="Автобус" {% if search.transport_type == 'Автобус' %}selected{% endif %}>Автобус</option>
+                </select>
+            </div>
+
+            <!-- Блок 4: просто кнопка (Найти) -->
+            <div class="find-btn">
+                <button type="submit">Найти</button>
+            </div>
+
+            <!-- Блок 5: надпись + кнопка (Профиль) -->
+            <div class="profile-btn">
+                <div>Войти в профиль (для сотрудников):</div>
+                <button type="button"><img src="../static/images/Профиль.svg" alt=""></button>
+            </div>
+        </form>
+    </header>

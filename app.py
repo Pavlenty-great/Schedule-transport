@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, abort
 import psycopg2
 import psycopg2.extras
 import os
@@ -17,6 +17,25 @@ def get_db_connection():
         password=os.getenv('DB_PASSWORD')
     )
     return conn
+
+# Добавляем глобальные функции для шаблонов
+@app.context_processor
+def utility_processor():
+    def get_weekday_id(date_str):
+        try:
+            date_obj = datetime.strptime(date_str, '%d.%m.%Y')
+            return date_obj.weekday() + 1
+        except:
+            return None
+    
+    def now():
+        return datetime.now()
+    
+    return {
+        'now': now,
+        'datetime': datetime,
+        'get_weekday_id': get_weekday_id
+    }
 
 def get_weekday_by_date(date_str):
     """Возвращает id дня недели по дате (1-7, где 1 - понедельник)"""
@@ -45,6 +64,7 @@ def main():
         'transport_type': 'Автобус'
     }
     error_message = None
+    weekday_id = None  # <-- по умолчанию None
     
     if request.method == 'POST':
         search_params['from'] = request.form.get('from', '').strip()
@@ -85,6 +105,10 @@ def main():
                     cur.close()
                     conn.close()
     
+    # Если это GET-запрос и есть дата в search_params (например, после перехода со страницы деталей)
+    if not weekday_id and search_params['date']:
+        weekday_id = get_weekday_by_date(search_params['date'])
+    
     display_date = search_params['date'] if search_params['date'] else ''
     if display_date:
         try:
@@ -98,7 +122,100 @@ def main():
                          routes=routes_data, 
                          search=search_params,
                          display_date=display_date,
+                         weekday_id=weekday_id,
                          error_message=error_message)
+
+@app.route('/route/<int:route_id>')
+def route_details(route_id):
+    date_str = request.args.get('date', '')
+    weekday_id = request.args.get('day', '')
+    trip_number = request.args.get('trip', '')  # <-- добавляем trip_number
+    departure_time = request.args.get('time', '')  # <-- добавляем время отправления
+    
+    if not date_str or not weekday_id:
+        abort(404)
+    
+    try:
+        weekday_id = int(weekday_id)
+    except ValueError:
+        abort(404)
+    
+    display_date = date_str
+    try:
+        date_obj = datetime.strptime(date_str, '%d.%m.%Y')
+        weekdays = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье']
+        display_date = f"{date_str}, {weekdays[date_obj.weekday()]}"
+    except:
+        pass
+    
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    # Если есть trip_number и departure_time, используем их
+    if trip_number and departure_time:
+        try:
+            trip_number = int(trip_number)
+            # Получаем информацию о маршруте
+            cur.callproc('get_route_info', [route_id])
+            route_info = cur.fetchone()
+            
+            # Получаем детали маршрута для конкретного рейса
+            cur.callproc('get_route_details', [route_id, weekday_id, trip_number])
+            route_details = cur.fetchall()
+            
+        except Exception as e:
+            print(f"Ошибка: {e}")
+            route_details = []
+            route_info = None
+    else:
+        # Если нет trip_number, получаем первый рейс
+        try:
+            # Получаем первый рейс (с минимальным временем)
+            cur.execute("""
+                SELECT DISTINCT trip_number, MIN(time_departure) as departure_time
+                FROM "Schedules"
+                WHERE route_id = %s AND day_id = %s AND trip_number IS NOT NULL
+                GROUP BY trip_number
+                ORDER BY MIN(time_departure)
+                LIMIT 1
+            """, (route_id, weekday_id))
+            first_trip = cur.fetchone()
+            
+            if first_trip:
+                trip_number = first_trip['trip_number']
+                departure_time = first_trip['departure_time'].strftime('%H:%M')
+                
+                cur.callproc('get_route_info', [route_id])
+                route_info = cur.fetchone()
+                
+                cur.callproc('get_route_details', [route_id, weekday_id, trip_number])
+                route_details = cur.fetchall()
+            else:
+                route_details = []
+                route_info = None
+        except Exception as e:
+            print(f"Ошибка: {e}")
+            route_details = []
+            route_info = None
+    
+    cur.close()
+    conn.close()
+    
+    if not route_info:
+        abort(404)
+    
+    search_params = {
+        'from': '',
+        'to': '',
+        'date': date_str,
+        'transport_type': 'Автобус'
+    }
+    
+    return render_template('details_route.html',
+                         route_info=route_info,
+                         route_details=route_details,
+                         display_date=display_date,
+                         search=search_params)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -3,6 +3,18 @@ const dateButton = document.getElementById('dateButton');
 const datePicker = document.getElementById('datePicker');
 const dateDisplay = document.querySelector('.info-header .date');
 
+// Проверяем, есть ли дата в URL (для страницы деталей)
+function getDateFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('date');
+}
+
+// Если есть дата в URL, используем её вместо того, что в datePicker
+const urlDate = getDateFromURL();
+if (urlDate && datePicker) {
+    datePicker.value = urlDate;
+}
+
 // Функция для форматирования даты в дд.мм.гггг
 function formatDateForInput(date) {
     const day = String(date.getDate()).padStart(2, '0');
@@ -11,17 +23,7 @@ function formatDateForInput(date) {
     return `${day}.${month}.${year}`;
 }
 
-// Функция форматирования даты в нужный вид (с днём недели)
-function formatDateWithWeekday(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    const weekdays = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
-    const weekday = weekdays[date.getDay()];
-    return `${day}.${month}.${year}, ${weekday}`;
-}
-
-// Функция для форматирования даты для отображения в кнопке
+// Функция для форматирования даты для отображения
 function formatDateForDisplay(date) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -32,14 +34,7 @@ function formatDateForDisplay(date) {
     return formatDateForInput(date);
 }
 
-// Функция обновления отображаемой даты в info-header
-function updateDisplayDate(date) {
-    if (dateDisplay) {
-        dateDisplay.textContent = `Дата: ${formatDateWithWeekday(date)}`;
-    }
-}
-
-// Устанавливаем дату из скрытого поля, если оно есть (после поиска)
+// Устанавливаем дату из скрытого поля, если оно есть
 let currentDate = null;
 if (datePicker.value) {
     const parts = datePicker.value.split('.');
@@ -65,7 +60,24 @@ if (!currentDate) {
     updateDisplayDate(today);
 }
 
-// Инициализация flatpickr (только один раз!)
+// Функция форматирования даты в нужный вид (с днём недели)
+function formatDateWithWeekday(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const weekdays = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
+    const weekday = weekdays[date.getDay()];
+    return `${day}.${month}.${year}, ${weekday}`;
+}
+
+// Функция обновления отображаемой даты в info-header
+function updateDisplayDate(date) {
+    if (dateDisplay) {
+        dateDisplay.textContent = `Дата: ${formatDateWithWeekday(date)}`;
+    }
+}
+
+// Инициализация flatpickr
 const fp = flatpickr(datePicker, {
     locale: "ru",
     minDate: "today",
