@@ -168,5 +168,73 @@ def route_details(route_id):
                          display_date=format_display_date(date_str),
                          search=search_params)
 
+@app.route('/stop/<int:stop_id>')
+def stop_schedule(stop_id):
+    date_str = request.args.get('date', '')
+    weekday_id = request.args.get('day', '')
+    
+    if not date_str or not weekday_id:
+        abort(404)
+    
+    try:
+        weekday_id = int(weekday_id)
+    except ValueError:
+        abort(404)
+    
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    try:
+        # Получаем название остановки
+        cur.callproc('get_stop_name', [stop_id])
+        stop_info = cur.fetchone()
+        
+        if not stop_info:
+            abort(404)
+        
+        # Получаем расписание остановки
+        cur.callproc('get_stop_schedule', [stop_id, weekday_id])
+        schedule_raw = cur.fetchall()
+        
+        # Группируем по маршрутам
+        schedule_data = {}
+        for item in schedule_raw:
+            route_id = item['route_id']
+            if route_id not in schedule_data:
+                schedule_data[route_id] = {
+                    'route_id': item['route_id'],
+                    'route_number': item['route_number'],
+                    'route_name': item['route_name'],
+                    'transport_type': item['transport_type'],
+                    'departure_times': [],
+                    'trip_numbers': []
+                }
+            schedule_data[route_id]['departure_times'].append(item['departure_time'].strftime('%H:%M'))
+            schedule_data[route_id]['trip_numbers'].append(item['trip_number'])
+        
+        schedule_list = list(schedule_data.values())
+        
+    except Exception as e:
+        print(f"Ошибка: {e}")
+        abort(404)
+    finally:
+        cur.close()
+        conn.close()
+    
+    search_params = {
+        'from': '',
+        'to': '',
+        'date': date_str,
+        'transport_type': 'Автобус'
+    }
+    
+    return render_template('stop_schedule.html',
+                         stop_info=stop_info,
+                         schedule_data=schedule_list,
+                         display_date=format_display_date(date_str),
+                         date_str=date_str,
+                         weekday_id=weekday_id,
+                         search=search_params)
+
 if __name__ == '__main__':
     app.run(debug=True)

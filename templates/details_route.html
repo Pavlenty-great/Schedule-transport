@@ -40,7 +40,9 @@
                     {% for detail in route_details %}
                     <tr>
                         <td>
-                            {{ detail.stop_name }}
+                            <a href="/stop/{{ detail.stop_id }}?date={{ request.args.get('date') }}&day={{ request.args.get('day') }}" class="stop-link">
+                                {{ detail.stop_name }}
+                            </a>
                             {% if detail.settlement_name %}
                                 <span class="settlement-name">({{ detail.settlement_name }})</span>
                             {% endif %}

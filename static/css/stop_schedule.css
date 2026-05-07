@@ -1,0 +1,91 @@
+main {
+    max-width: 1200px;
+    margin: 30px 0;
+    padding: 0 20px;
+    padding-left: 40px;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Блок с заголовком и датой */
+.info-header {
+    border: 2px solid black;
+    padding: 15px 20px;
+    margin-bottom: 30px;
+    width: fit-content;
+    min-width: 300px;
+}
+
+.info-header h5 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    color: #1a1a1a;
+}
+
+.info-header .date {
+    font-size: 16px;
+    color: #555;
+    margin: 0;
+}
+
+/* Карточка рейса */
+.route-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* Иконка транспорта */
+.route-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+/* Контент карточки */
+.route-content {
+    flex: 1;
+}
+
+/* Название маршрута — ссылка */
+.route-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* Контейнер для времени */
+.route-details {
+    font-size: 15px;
+    color: #333;
+}
+
+/* Сообщение об ошибке */
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #c62828;
+}
+
+/* Нет результатов */
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+/* Название маршрута*/
+.route-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 12px;
+    display: inline-block;
+}
