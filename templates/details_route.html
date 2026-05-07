@@ -14,7 +14,7 @@
     <main>
         <div class="info-header">
             <h5>
-                Маршрут транспорта №{{ route_info.route_number }} из {{ route_info.from_settlement }} в {{ route_info.to_settlement }}
+                Маршрут {% if route_info.transport_type|lower == 'автобус' %}автобуса{% else %}{{ route_info.transport_type|lower }}{% endif %} №{{ route_info.route_number }} из "{{ route_info.from_stop_name }}" в "{{ route_info.to_stop_name }}"
             </h5>
             <div class="date">
                 Дата: {{ display_date }}

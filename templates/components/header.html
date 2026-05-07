@@ -27,6 +27,8 @@
                 <div>Выберите тип транспорта:</div>
                 <select name="transport_type">
                     <option value="Автобус" {% if search.transport_type == 'Автобус' %}selected{% endif %}>Автобус</option>
+                    <option value="Поезд" {% if search.transport_type == 'Поезд' %}selected{% endif %}>Поезд</option>
+                    <option value="Электричка" {% if search.transport_type == 'Электричка' %}selected{% endif %}>Электричка</option>
                 </select>
             </div>
 
