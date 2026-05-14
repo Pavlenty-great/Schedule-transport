@@ -1,12 +1,37 @@
-from flask import Flask, render_template, request, abort
+from flask import Flask, render_template, request, abort, redirect, url_for, session
 import psycopg2
 import psycopg2.extras
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from functools import wraps
 
 app = Flask(__name__)
 load_dotenv()
+
+app.secret_key = os.getenv('SECRET_KEY')
+
+# ========== ДЕКОРАТОРЫ ДЛЯ ПРОВЕРКИ РОЛЕЙ ==========
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def role_required(allowed_roles):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if 'user_id' not in session:
+                return redirect(url_for('login'))
+            if session.get('role') not in allowed_roles:
+                abort(403)
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
 
 # ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
 
@@ -60,6 +85,12 @@ def utility_processor():
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
+    user_info = {
+        'name': session.get('user_name'),
+        'role': session.get('role'),
+        'is_authenticated': 'user_id' in session
+    }
+
     search_params = {
         'from': '',
         'to': '',
@@ -109,10 +140,17 @@ def main():
                          routes=routes_data,
                          search=search_params,
                          display_date=format_display_date(search_params['date']),
-                         error_message=error_message)
+                         error_message=error_message,
+                         user=user_info)
 
 @app.route('/route/<int:route_id>')
 def route_details(route_id):
+    user_info = {
+        'name': session.get('user_name'),
+        'role': session.get('role'),
+        'is_authenticated': 'user_id' in session
+    }
+
     date_str = request.args.get('date', '')
     weekday_id = request.args.get('day', '')
     trip_number = request.args.get('trip', '')
@@ -166,10 +204,17 @@ def route_details(route_id):
                          route_info=route_info,
                          route_details=route_details,
                          display_date=format_display_date(date_str),
-                         search=search_params)
+                         search=search_params,
+                         user=user_info)
 
 @app.route('/stop/<int:stop_id>')
 def stop_schedule(stop_id):
+    user_info = {
+        'name': session.get('user_name'),
+        'role': session.get('role'),
+        'is_authenticated': 'user_id' in session
+    }
+
     date_str = request.args.get('date', '')
     weekday_id = request.args.get('day', '')
     
@@ -234,7 +279,62 @@ def stop_schedule(stop_id):
                          display_date=format_display_date(date_str),
                          date_str=date_str,
                          weekday_id=weekday_id,
-                         search=search_params)
+                         search=search_params,
+                         user=user_info)
+
+# ========== МАРШРУТ АВТОРИЗАЦИИ ==========
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        login = request.form.get('login', '').strip()
+        password = request.form.get('password', '').strip()
+        
+        if not login or not password:
+            return render_template('login.html', error='Введите логин и пароль')
+        
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        
+        try:
+            # Ищем пользователя
+            cur.execute("""
+                SELECT u.id, u.name, u.surname, u.login, u.password, r.name as role
+                FROM "Users" u
+                JOIN "Users_roles" ur ON u.id = ur.user_id
+                JOIN "Roles" r ON ur.role_id = r.id
+                WHERE u.login = %s
+            """, (login,))
+            
+            user = cur.fetchone()
+            
+            if user and user['password'] == password:  # В реальном проекте используйте хэширование!
+                session['user_id'] = user['id']
+                session['user_name'] = f"{user['name']} {user['surname']}"
+                session['login'] = user['login']
+                session['role'] = user['role']
+                
+                cur.close()
+                conn.close()
+                
+                # Перенаправляем на главную страницу
+                return redirect(url_for('main'))
+            else:
+                return render_template('login.html', error='Неверный логин или пароль')
+                
+        except Exception as e:
+            print(f"Ошибка авторизации: {e}")
+            return render_template('login.html', error='Ошибка при входе в систему')
+        finally:
+            cur.close()
+            conn.close()
+    
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)

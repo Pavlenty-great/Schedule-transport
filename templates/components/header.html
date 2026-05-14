@@ -39,8 +39,15 @@
 
             <!-- Блок 5: надпись + кнопка (Профиль) -->
             <div class="profile-btn">
-                <div>Войти в профиль (для сотрудников):</div>
-                <button type="button"><img src="../static/images/Профиль.svg" alt=""></button>
+                {% if user.is_authenticated %}
+                    <div>{{ user.name }} ({{ user.role }})</div>
+                    <a href="/logout" class="logout-link">Выйти</a>
+                {% else %}
+                    <div>Войти в профиль (для сотрудников):</div>
+                    <button type="button" class="login-icon-btn" onclick="location.href='/login'">
+                        <img src="../static/images/Профиль.svg" alt="Войти">
+                    </button>
+                {% endif %}
             </div>
         </form>
     </header>

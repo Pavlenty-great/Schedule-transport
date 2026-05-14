@@ -111,3 +111,20 @@ body {
     color: #666;
     border-color: #ccc;
 }
+
+.login-link, .logout-link {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.login-link:hover, .logout-link:hover {
+    background-color: #e0e0e0;
+    text-decoration: none;
+}
