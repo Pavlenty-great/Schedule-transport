@@ -1,0 +1,208 @@
+<!-- Модальное окно для добавления/редактирования расписания -->
+<div id="schedule-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 id="schedule-modal-title">Добавление рейса</h3>
+        <form id="schedule-form">
+            <input type="hidden" id="schedule-id" name="schedule_id">
+            <div class="form-group">
+                <label>Маршрут</label>
+                <select id="modal-route-id" name="route_id" required>
+                    <option value="">Выберите маршрут</option>
+                    {% for route in routes %}
+                    <option value="{{ route.route_id }}">{{ route.route_number }} {{ route.route_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Остановка</label>
+                <select id="modal-stop-id" name="stop_id" required>
+                    <option value="">Выберите остановку</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>День недели</label>
+                <select id="modal-day-id" name="day_id" required>
+                    {% for day in days %}
+                    <option value="{{ day.day_id }}">{{ day.day_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Время отправления</label>
+                <input type="time" id="modal-time" name="time" required>
+            </div>
+            <div class="form-group">
+                <label>Номер рейса (trip_number)</label>
+                <input type="number" id="modal-trip" name="trip_number" required>
+            </div>
+            <button type="submit" class="btn-primary">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно для добавления остановки в маршрут -->
+<div id="stop-to-route-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Добавление остановки в маршрут</h3>
+        <form id="stop-to-route-form">
+            <input type="hidden" id="stop-route-id" name="route_id">
+            <div class="form-group">
+                <label>Остановка</label>
+                <select id="modal-add-stop-id" name="stop_id" required>
+                    <option value="">Выберите остановку</option>
+                    {% for stop in all_stops %}
+                    <option value="{{ stop.stop_id }}">{{ stop.stop_name }} {% if stop.settlement_name %}({{ stop.settlement_name }}){% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Порядковый номер</label>
+                <input type="number" id="modal-order-number" name="order_number" required>
+            </div>
+            <button type="submit" class="btn-primary">Добавить</button>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно для добавления маркера -->
+<div id="marker-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Добавление ручного маркера</h3>
+        <form id="marker-form">
+            <div class="form-group">
+                <label>Маршрут</label>
+                <select id="marker-route-id" name="route_id" required>
+                    <option value="">Выберите маршрут</option>
+                    {% for route in routes %}
+                    <option value="{{ route.route_id }}">{{ route.route_number }} {{ route.route_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Остановка</label>
+                <select id="marker-stop-id" name="stop_id" required>
+                    <option value="">Сначала выберите маршрут</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Тип маркера</label>
+                <select id="marker-type-id" name="type_marker_id" required>
+                    {% for marker_type in marker_types %}
+                    <option value="{{ marker_type.type_id }}">{{ marker_type.type_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-primary">Добавить</button>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования маркера -->
+<div id="edit-marker-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Редактирование маркера</h3>
+        <form id="edit-marker-form">
+            <input type="hidden" id="edit-marker-id" name="marker_id">
+            <div class="form-group">
+                <label>Маршрут</label>
+                <select id="edit-marker-route-id" name="route_id" required>
+                    <option value="">Выберите маршрут</option>
+                    {% for route in routes %}
+                    <option value="{{ route.route_id }}">{{ route.route_number }} {{ route.route_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Остановка</label>
+                <select id="edit-marker-stop-id" name="stop_id" required>
+                    <option value="">Сначала выберите маршрут</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Тип маркера</label>
+                <select id="edit-marker-type-id" name="type_marker_id" required>
+                    {% for marker_type in marker_types %}
+                    <option value="{{ marker_type.type_id }}">{{ marker_type.type_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-primary">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно для редактирования остановки в маршруте -->
+<div id="edit-stop-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Редактирование остановки в маршруте</h3>
+        <form id="edit-stop-form">
+            <input type="hidden" id="edit-stop-route-id" name="route_id">
+            <input type="hidden" id="edit-old-stop-id" name="old_stop_id">
+            <div class="form-group">
+                <label>Порядковый номер</label>
+                <input type="number" id="edit-order-number" name="order_number" readonly style="background-color: #f5f5f5;">
+            </div>
+            <div class="form-group">
+                <label>Текущая остановка</label>
+                <input type="text" id="edit-current-stop" readonly style="background-color: #f5f5f5;">
+            </div>
+            <div class="form-group">
+                <label>Новая остановка</label>
+                <select id="edit-new-stop-id" name="new_stop_id" required>
+                    <option value="">Выберите остановку</option>
+                    {% for stop in all_stops %}
+                    <option value="{{ stop.stop_id }}">{{ stop.stop_name }} {% if stop.settlement_name %}({{ stop.settlement_name }}){% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-primary">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно для добавления/редактирования пользователя -->
+<div id="user-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 id="user-modal-title">Добавление пользователя</h3>
+        <form id="user-form">
+            <input type="hidden" id="user-id" name="id">
+            <div class="form-group">
+                <label>Имя</label>
+                <input type="text" id="user-name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label>Фамилия</label>
+                <input type="text" id="user-surname" name="surname" required>
+            </div>
+            <div class="form-group">
+                <label>Отчество</label>
+                <input type="text" id="user-patronymic" name="patronymic">
+            </div>
+            <div class="form-group">
+                <label>Логин</label>
+                <input type="text" id="user-login" name="login" required>
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="user-password" name="password">
+                <small>Оставьте пустым, чтобы не менять пароль</small>
+            </div>
+            <div class="form-group">
+                <label>Роль</label>
+                <select id="user-role-id" name="role_id" required>
+                    <option value="">Выберите роль</option>
+                    {% for role in roles %}
+                    <option value="{{ role.role_id }}">{{ role.role_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-primary">Сохранить</button>
+        </form>
+    </div>
+</div>
