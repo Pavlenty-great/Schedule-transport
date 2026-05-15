@@ -771,10 +771,141 @@ function showMessage(message, type) {
     }, 3000);
 }
 
+// ========== УПРАВЛЕНИЕ ТРАНСПОРТОМ ==========
+async function loadTransport() {
+    const tbody = document.getElementById('transport-tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...</td></tr>';
+    
+    try {
+        const response = await fetch('/api/admin/transport');
+        const transport = await response.json();
+        
+        if (transport.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет транспортных средств</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = transport.map(t => `
+            <tr>
+                <td>${t.id}</td>
+                <td>${t.model}</td>
+                <td>${t.capacity}</td>
+                <td>${t.transport_type}</td>
+                <td>${t.route_number} ${t.route_name}</td>
+                <td>${t.vehicle_number}</td>
+                <td>
+                    <button class="btn-edit" onclick="editTransport(${t.id})">Изменить</button>
+                    <button class="btn-danger" onclick="deleteTransport(${t.id})">Удалить</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Ошибка:', error);
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки</td></tr>';
+    }
+}
+
+const addTransportBtn = document.getElementById('add-transport-btn');
+if (addTransportBtn) {
+    addTransportBtn.addEventListener('click', () => {
+        document.getElementById('transport-modal-title').textContent = 'Добавление транспорта';
+        document.getElementById('transport-id').value = '';
+        document.getElementById('transport-model').value = '';
+        document.getElementById('transport-capacity').value = '';
+        document.getElementById('transport-type-id').value = '';
+        document.getElementById('transport-route-id').value = '';
+        document.getElementById('transport-vehicle-number').value = '';
+        openModal('transport-modal');
+    });
+}
+
+const transportForm = document.getElementById('transport-form');
+if (transportForm) {
+    transportForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = {
+            id: document.getElementById('transport-id').value || null,
+            model: document.getElementById('transport-model').value,
+            capacity: document.getElementById('transport-capacity').value,
+            type_id: document.getElementById('transport-type-id').value,
+            route_id: document.getElementById('transport-route-id').value,
+            vehicle_number: document.getElementById('transport-vehicle-number').value
+        };
+        
+        try {
+            const response = await fetch('/api/admin/transport', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                closeModal('transport-modal');
+                transportForm.reset();
+                loadTransport();
+                showMessage('Транспорт сохранён', 'success');
+            } else {
+                alert(result.error || 'Ошибка при сохранении');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Ошибка при сохранении');
+        }
+    });
+}
+
+window.editTransport = async function(transportId) {
+    try {
+        const response = await fetch(`/api/admin/transport/${transportId}`);
+        const transport = await response.json();
+        
+        document.getElementById('transport-modal-title').textContent = 'Редактирование транспорта';
+        document.getElementById('transport-id').value = transport.id;
+        document.getElementById('transport-model').value = transport.model;
+        document.getElementById('transport-capacity').value = transport.capacity;
+        document.getElementById('transport-type-id').value = transport.type_id;
+        document.getElementById('transport-route-id').value = transport.route_id;
+        document.getElementById('transport-vehicle-number').value = transport.vehicle_number;
+        
+        openModal('transport-modal');
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Не удалось загрузить данные транспорта');
+    }
+};
+
+window.deleteTransport = async function(transportId) {
+    if (!confirm('Удалить это транспортное средство?')) return;
+    
+    try {
+        const response = await fetch(`/api/admin/transport/${transportId}`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            loadTransport();
+            showMessage('Транспорт удалён', 'success');
+        } else {
+            alert('Ошибка при удалении');
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Ошибка при удалении');
+    }
+};
+
 // ========== ИНИЦИАЛИЗАЦИЯ ==========
 if (document.getElementById('tab-markers')) {
     loadMarkers();
 }
 if (document.getElementById('tab-users')) {
     loadUsers();
+}
+if (document.getElementById('tab-transport')) {
+    loadTransport();
 }

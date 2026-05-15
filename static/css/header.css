@@ -36,7 +36,8 @@ header {
 }
 
 .find-btn {
-    align-self: flex-end;
+    align-self: center;
+    margin-top: 18px;
 }
 
 input,

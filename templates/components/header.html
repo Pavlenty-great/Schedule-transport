@@ -4,6 +4,7 @@
     </div>
 
     <form method="POST" action="/" class="header-right">
+        <!-- Блок 1: Откуда и Куда -->
         <div class="form-group">
             <div>Выберите город(а):</div>
             <div class="button-group">
@@ -12,6 +13,7 @@
             </div>
         </div>
 
+        <!-- Блок 2: Дата -->
         <div class="form-group date-group">
             <div>Выберите дату:</div>
             <div class="date-wrapper">
@@ -20,6 +22,7 @@
             </div>
         </div>
 
+        <!-- Блок 3: Тип транспорта -->
         <div class="form-group">
             <div>Выберите тип транспорта:</div>
             <select name="transport_type">
@@ -29,10 +32,13 @@
             </select>
         </div>
 
-        <div class="find-btn">
+        <!-- Блок 4: Кнопка Найти -->
+        <div class="form-group">
+            <div>&nbsp;</div>
             <button type="submit">Найти</button>
         </div>
 
+        <!-- Блок 5: Профиль -->
         <div class="profile-btn">
             {% if user.is_authenticated %}
                 <div>{{ user.name }} ({{ user.role }})</div>

@@ -770,6 +770,10 @@ def admin_dashboard():
     cur.execute('SELECT id as role_id, name as role_name FROM "Roles" ORDER BY id')
     roles = cur.fetchall()
     
+    # Получаем типы транспорта
+    cur.execute('SELECT id as type_id, name as type_name FROM "Transport_type" ORDER BY id')
+    transport_types = cur.fetchall()
+    
     cur.close()
     conn.close()
 
@@ -792,6 +796,7 @@ def admin_dashboard():
                          all_stops=all_stops,
                          marker_types=marker_types,
                          roles=roles,
+                         transport_types=transport_types,
                          search=search_params,
                          user=user_info)
 
@@ -919,6 +924,90 @@ def api_delete_user(user_id):
     finally:
         cur.close()
         conn.close()
+    
+    return jsonify({'success': success})
+
+# ========== API ДЛЯ АДМИНИСТРАТОРА (УПРАВЛЕНИЕ ТРАНСПОРТОМ) ==========
+
+@app.route('/api/admin/transport', methods=['GET'])
+@login_required
+@role_required(['Администратор'])
+def api_get_transport():
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    cur.callproc('get_all_transport')
+    transport = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
+    return jsonify(transport)
+
+
+@app.route('/api/admin/transport/<int:transport_id>', methods=['GET'])
+@login_required
+@role_required(['Администратор'])
+def api_get_transport_item(transport_id):
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    cur.callproc('get_transport_by_id', [transport_id])
+    transport = cur.fetchone()
+    
+    cur.close()
+    conn.close()
+    
+    if not transport:
+        return jsonify({'error': 'Транспорт не найден'}), 404
+    
+    return jsonify(transport)
+
+
+@app.route('/api/admin/transport', methods=['POST'])
+@login_required
+@role_required(['Администратор'])
+def api_create_update_transport():
+    data = request.json
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        cur.callproc('upsert_transport', [
+            data.get('id'),
+            data['model'],
+            data['capacity'],
+            data['type_id'],
+            data['route_id'],
+            data['vehicle_number']
+        ])
+        conn.commit()
+        success = True
+    except Exception as e:
+        print(f"Ошибка при сохранении транспорта: {e}")
+        conn.rollback()
+        success = False
+    finally:
+        cur.close()
+        conn.close()
+    
+    return jsonify({'success': success})
+
+
+@app.route('/api/admin/transport/<int:transport_id>', methods=['DELETE'])
+@login_required
+@role_required(['Администратор'])
+def api_delete_transport(transport_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.callproc('delete_transport', [transport_id])
+    conn.commit()
+    success = cur.fetchone()[0]
+    
+    cur.close()
+    conn.close()
     
     return jsonify({'success': success})
 
