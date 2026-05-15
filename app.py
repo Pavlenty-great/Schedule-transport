@@ -694,5 +694,73 @@ def api_update_route_stop():
     
     return jsonify({'success': success})
 
+# Получение одного расписания для редактирования
+@app.route('/api/dispatcher/schedule/<int:schedule_id>', methods=['GET'])
+@login_required
+@role_required(['Администратор', 'Диспетчер'])
+def api_get_schedule_item(schedule_id):
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    cur.execute("""
+        SELECT s.id, s.route_id, s.stop_id, s.day_id, s.time_departure, s.trip_number,
+               r.number as route_number, r.name as route_name
+        FROM "Schedules" s
+        JOIN "Routes" r ON s.route_id = r.id
+        WHERE s.id = %s
+    """, (schedule_id,))
+    
+    schedule = cur.fetchone()
+    cur.close()
+    conn.close()
+    
+    if not schedule:
+        return jsonify({'error': 'Расписание не найдено'}), 404
+    
+    # Преобразуем time_departure в строку для JSON
+    if schedule['time_departure']:
+        schedule['time_departure'] = schedule['time_departure'].strftime('%H:%M:%S')
+    
+    return jsonify(schedule)
+
+
+# Обновление расписания (PUT)
+@app.route('/api/dispatcher/schedule/<int:schedule_id>', methods=['PUT'])
+@login_required
+@role_required(['Администратор', 'Диспетчер'])
+def api_update_schedule(schedule_id):
+    data = request.json
+    
+    # Валидация входных данных
+    required_fields = ['route_id', 'stop_id', 'day_id', 'time', 'trip_number']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'Отсутствует поле {field}'}), 400
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        # Используем существующую функцию upsert_schedule
+        cur.callproc('upsert_schedule', [
+            schedule_id,
+            data['route_id'],
+            data['stop_id'],
+            data['day_id'],
+            data['time'],
+            data['trip_number']
+        ])
+        conn.commit()
+        success = True
+    except Exception as e:
+        print(f"Ошибка при обновлении расписания: {e}")
+        conn.rollback()
+        success = False
+    finally:
+        cur.close()
+        conn.close()
+    
+    return jsonify({'success': success})
+
 if __name__ == '__main__':
     app.run(debug=True)
