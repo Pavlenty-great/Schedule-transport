@@ -89,7 +89,8 @@ def main():
     user_info = {
         'name': session.get('user_name'),
         'role': session.get('role'),
-        'is_authenticated': 'user_id' in session
+        'is_authenticated': 'user_id' in session,
+        'show_dashboard_btn': session.get('role') in ['Диспетчер', 'Администратор'] if 'user_id' in session else False
     }
 
     search_params = {
@@ -318,13 +319,7 @@ def login():
                 cur.close()
                 conn.close()
                 
-                # Перенаправляем в зависимости от роли
-                if user['role'] == 'Диспетчер':
-                    return redirect(url_for('dispatcher_dashboard'))
-                elif user['role'] == 'Администратор':
-                    return redirect(url_for('admin_dashboard'))
-                else:
-                    return redirect(url_for('main'))
+                return redirect(url_for('main'))
             else:
                 return render_template('login.html', error='Неверный логин или пароль')
             

@@ -24,7 +24,6 @@ header {
     align-items: flex-start;
 }
 
-/* Стили для обертки календаря */
 .date-wrapper {
     position: relative;
 }
@@ -60,9 +59,9 @@ select {
     width: auto;
     min-width: 30px;
     height: 35px;
-    padding: 0;
-    border: none;
-    background: none;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
     cursor: pointer;
 }
 
@@ -96,7 +95,6 @@ body {
     margin: 0;
 }
 
-/* Позиционирование календаря flatpickr */
 .flatpickr-calendar {
     position: absolute !important;
     top: 100% !important;
@@ -105,7 +103,6 @@ body {
     z-index: 1000 !important;
 }
 
-/* Стиль для кнопки после выбора даты */
 #dateButton.has-date {
     background-color: #e0e0e0;
     color: #666;
@@ -127,4 +124,14 @@ body {
 .login-link:hover, .logout-link:hover {
     background-color: #e0e0e0;
     text-decoration: none;
+}
+
+.dashboard-toggle-btn {
+    background-color: #0077ff !important;
+    color: white !important;
+    border-color: #0077ff !important;
+}
+
+.dashboard-toggle-btn:hover {
+    background-color: #0055cc !important;
 }
