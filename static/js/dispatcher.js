@@ -265,33 +265,34 @@ async function loadMarkers() {
     const tbody = document.getElementById('markers-tbody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="6" class="loading">Загрузка...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...<\/td><\/tr>';
     
     try {
         const response = await fetch('/api/dispatcher/markers');
         const markers = await response.json();
         
         if (markers.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Нет активных маркеров</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет активных маркеров<\/td><\/tr>';
             return;
         }
         
         tbody.innerHTML = markers.map(m => `
             <tr>
-                <td>${new Date(m.marker_time).toLocaleString()}</td>
-                <td>${m.stop_name}</td>
-                <td>${m.route_name}</td>
-                <td><span class="marker-type-${m.type_marker_id || 0}">${m.marker_type}</span></td>
-                <td>${m.dispatcher_name}</td>
+                <td>${new Date(m.marker_time).toLocaleString()}<\/td>
+                <td>${m.stop_name}<\/td>
+                <td>${m.route_name}<\/td>
+                <td>Рейс №${m.trip_number}<\/td>
+                <td>${m.marker_type}<\/td>
+                <td>${m.dispatcher_name}<\/td>
                 <td>
-                    <button class="btn-edit" onclick="editMarker(${m.marker_id})">Изменить</button>
-                    <button class="btn-danger" onclick="deleteMarker(${m.marker_id})">Удалить</button>
-                </td>
-            </tr>
+                    <button class="btn-edit" onclick="editMarker(${m.marker_id})">Изменить<\/button>
+                    <button class="btn-danger" onclick="deleteMarker(${m.marker_id})">Удалить<\/button>
+                 <\/td>
+             <\/tr>
         `).join('');
     } catch (error) {
         console.error('Ошибка:', error);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Ошибка загрузки</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки<\/td><\/tr>';
     }
 }
 
