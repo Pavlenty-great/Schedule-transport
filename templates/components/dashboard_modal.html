@@ -1,0 +1,37 @@
+<!-- Модальное окно панели управления -->
+{% if user.is_authenticated and user.show_dashboard_btn %}
+<div id="dashboardModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000;">
+    <div style="position: relative; width: 90%; height: 90%; margin: 2% auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <button id="closeDashboardBtn" style="position: absolute; top: 10px; right: 10px; background-color: #dc3545; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; z-index: 100; font-size: 18px; font-weight: bold;">&times;</button>
+        {% if user.role == 'Администратор' %}
+        <iframe src="/admin" style="width: 100%; height: 100%; border: none;"></iframe>
+        {% else %}
+        <iframe src="/dispatcher" style="width: 100%; height: 100%; border: none;"></iframe>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    const openBtn = document.getElementById('openDashboardBtn');
+    const modal = document.getElementById('dashboardModal');
+    const closeBtn = document.getElementById('closeDashboardBtn');
+    
+    if (openBtn && modal) {
+        openBtn.addEventListener('click', function() {
+            modal.style.display = 'block';
+        });
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        }
+        
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endif %}

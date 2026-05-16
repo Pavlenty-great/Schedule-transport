@@ -73,7 +73,8 @@ def route_details(route_id):
     user_info = {
         'name': session.get('user_name'),
         'role': session.get('role'),
-        'is_authenticated': 'user_id' in session
+        'is_authenticated': 'user_id' in session,
+        'show_dashboard_btn': session.get('role') in ['Диспетчер', 'Администратор'] if 'user_id' in session else False
     }
 
     date_str = request.args.get('date', '')
@@ -135,7 +136,8 @@ def stop_schedule(stop_id):
     user_info = {
         'name': session.get('user_name'),
         'role': session.get('role'),
-        'is_authenticated': 'user_id' in session
+        'is_authenticated': 'user_id' in session,
+        'show_dashboard_btn': session.get('role') in ['Диспетчер', 'Администратор'] if 'user_id' in session else False
     }
 
     date_str = request.args.get('date', '')
