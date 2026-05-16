@@ -1,47 +1,59 @@
 main {
     max-width: 1200px;
-    margin: 30px 0;
+    margin: 30px auto;
     padding: 0 20px;
-    padding-left: 40px;
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Блок с заголовком и датой */
 .info-header {
-    border: 2px solid black;
-    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px 25px;
     margin-bottom: 30px;
-    width: fit-content;
-    min-width: 300px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .info-header h5 {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 600;
-    margin: 0 0 12px 0;
-    color: #1a1a1a;
+    margin: 0 0 10px 0;
+    color: white;
 }
 
 .info-header .date {
-    font-size: 16px;
-    color: #555;
+    font-size: 14px;
+    color: rgba(255,255,255,0.9);
     margin: 0;
 }
 
 /* Карточка рейса */
 .route-card {
     display: flex;
-    align-items: flex-start;
-    gap: 15px;
-    margin-bottom: 20px;
+    align-items: center;
+    gap: 20px;
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: none;
+}
+
+.route-card:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 /* Иконка транспорта */
 .route-icon {
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     object-fit: cover;
     flex-shrink: 0;
+    border-radius: 12px;
+    background-color: #f0f2f5;
+    padding: 8px;
 }
 
 /* Контент карточки */
@@ -49,27 +61,47 @@ main {
     flex: 1;
 }
 
-/* Название маршрута — ссылка */
+/* Название маршрута */
 .route-title {
     font-size: 18px;
     font-weight: 700;
+    color: #333;
     margin-bottom: 12px;
-    text-decoration: none;
     display: inline-block;
 }
 
 /* Контейнер для времени */
 .route-details {
     font-size: 15px;
-    color: #333;
+    color: #555;
+}
+
+/* Стили для ссылок времени отправления */
+.time-link {
+    color: #0077ff;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 4px 10px;
+    background: #e3f2fd;
+    border-radius: 20px;
+    display: inline-block;
+    margin: 2px;
+    transition: all 0.3s ease;
+}
+
+.time-link:hover {
+    background: #0077ff;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
 }
 
 /* Сообщение об ошибке */
 .error-message {
-    background-color: #ffebee;
+    background-color: #fee;
     color: #c62828;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 15px 20px;
+    border-radius: 12px;
     margin-bottom: 20px;
     border-left: 4px solid #c62828;
 }
@@ -77,41 +109,13 @@ main {
 /* Нет результатов */
 .no-results {
     text-align: center;
-    padding: 40px;
-    color: #666;
+    padding: 60px 40px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-/* Название маршрута*/
-.route-title {
+.no-results p {
     font-size: 18px;
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 12px;
-    display: inline-block;
-}
-
-/* Стили для ссылок времени отправления */
-.time-link {
-    color: #0077ff;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.time-link:hover {
-    text-decoration: underline;
-    color: #0055cc;
-}
-
-/* Карточка рейса без подсветки */
-.route-card:hover {
-    background-color: transparent;
-}
-
-.route-content:hover {
-    background-color: transparent;
-}
-
-.route-title:hover {
-    color: #333;
-    text-decoration: none;
+    color: #888;
 }

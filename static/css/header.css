@@ -1,128 +1,210 @@
+/* Стили только для хедера и его потомков */
 header {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    padding: 20px;
+    gap: 20px;
+    padding: 20px 30px;
     flex-wrap: wrap;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.header-left {
-    margin-right: 50px;
+header .header-left {
+    margin-right: 20px;
 }
 
-.header-right {
+header .header-left h1 {
+    margin: 0;
+    font-size: 28px;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+header .header-right {
     display: flex;
     gap: 20px;
-    align-items: flex-start;
+    align-items: flex-end;
     flex-wrap: wrap;
 }
 
-.form-group {
+header .form-group {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    align-items: flex-start;
 }
 
-.date-wrapper {
+header .form-group > div {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+}
+
+header .date-wrapper {
     position: relative;
 }
 
-.profile-btn {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    align-items: center;
-}
-
-input,
-button:not(.profile-btn button),
-select {
+/* Стили для полей ввода в хедере */
+header input,
+header select {
     width: 150px;
-    height: 35px;
-    padding: 5px 10px;
+    height: 38px;
+    padding: 5px 12px;
     box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: white;
+    transition: all 0.3s ease;
 }
 
-.profile-btn button {
-    width: auto;
-    min-width: 30px;
-    height: 35px;
-    padding: 0 10px;
-    border: 1px solid #ccc;
-    background-color: #f0f0f0;
+header input:focus,
+header select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+}
+
+/* Стили для кнопок в хедере (кроме кнопок профиля) */
+header button:not(.profile-btn button) {
+    border: none;
+    font-weight: 500;
     cursor: pointer;
+    transition: all 0.3s ease;
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 8px;
 }
 
-.profile-btn button img {
-    height: 100%;
-    width: auto;
+header button:not(.profile-btn button):hover {
+    transform: translateY(-2px);
 }
 
-.button-group {
-    display: flex;
-    gap: 10px;
-}
-
-.button-group input {
-    width: 150px;
-}
-
-button {
-    cursor: pointer;
+/* Кнопка "Сегодня" в хедере */
+header .date-wrapper button {
     background-color: #f0f0f0;
+    color: #333;
     border: 1px solid #ccc;
-    border-radius: 4px;
 }
 
-h1 {
-    margin: 0;
-    font-size: 24px;
+header .date-wrapper button:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
 }
 
-body {
-    margin: 0;
-}
-
-.flatpickr-calendar {
-    position: absolute !important;
-    top: 100% !important;
-    left: 0 !important;
-    margin-top: 5px !important;
-    z-index: 1000 !important;
-}
-
-#dateButton.has-date {
+/* Дата после выбора */
+header #dateButton.has-date {
     background-color: #e0e0e0;
     color: #666;
     border-color: #ccc;
 }
 
-.login-link, .logout-link {
+/* Кнопка "Найти" в хедере */
+header .header-right > .form-group > button[type="submit"] {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+header .header-right > .form-group > button[type="submit"]:hover {
+    background-color: #e0e0e0;
+}
+
+/* Блок профиля в хедере */
+header .profile-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    background: rgba(255,255,255,0.15);
+    padding: 10px 15px;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+}
+
+header .profile-btn > div {
+    font-size: 13px;
+    color: white;
+    font-weight: 500;
+}
+
+header .profile-btn button {
+    width: auto;
+    min-width: 100px;
+    height: 36px;
+    padding: 0 15px;
+    border: none;
+    background-color: rgba(255,255,255,0.2);
+    color: white;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+header .profile-btn button:hover {
+    background-color: rgba(255,255,255,0.3);
+    transform: translateY(-2px);
+}
+
+header .profile-btn button img {
+    height: 20px;
+    width: auto;
+    filter: brightness(0) invert(1);
+}
+
+header .button-group {
+    display: flex;
+    gap: 10px;
+}
+
+header .button-group input {
+    width: 150px;
+}
+
+/* Ссылки входа/выхода в хедере */
+header .login-link,
+header .logout-link {
     display: inline-block;
     padding: 8px 16px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    background-color: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 8px;
     text-decoration: none;
-    color: #333;
-    font-size: 14px;
-    transition: background-color 0.2s;
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-.login-link:hover, .logout-link:hover {
-    background-color: #e0e0e0;
+header .login-link:hover,
+header .logout-link:hover {
+    background-color: rgba(255,255,255,0.3);
     text-decoration: none;
+    transform: translateY(-2px);
 }
 
-.dashboard-toggle-btn {
-    background-color: #0077ff !important;
-    color: white !important;
-    border-color: #0077ff !important;
+/* Кнопка панели управления в хедере */
+header .dashboard-toggle-btn {
+    background-color: #ffc107 !important;
+    color: #333 !important;
 }
 
-.dashboard-toggle-btn:hover {
-    background-color: #0055cc !important;
+header .dashboard-toggle-btn:hover {
+    background-color: #e0a800 !important;
+}
+
+/* Календарь flatpickr */
+.flatpickr-calendar {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    margin-top: 8px !important;
+    z-index: 1000 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+}
+
+/* Общие стили для body (не влияют на панели) */
+body {
+    margin: 0;
+    background-color: #f0f2f5;
 }
