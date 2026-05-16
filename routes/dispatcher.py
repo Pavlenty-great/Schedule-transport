@@ -299,24 +299,7 @@ def api_get_markers():
     conn = get_db_connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
-    cur.execute("""
-        SELECT 
-            m.id as marker_id,
-            m.marker_time,
-            s.name as stop_name,
-            r.name as route_name,
-            tm.name as marker_type,
-            (u.name || ' ' || u.surname) as dispatcher_name,
-            tm.id as type_marker_id,
-            m.trip_number
-        FROM "Manual_markers" m
-        JOIN "Stops" s ON m.stop_id = s.id
-        JOIN "Routes" r ON m.route_id = r.id
-        JOIN "Type_markers" tm ON m.type_marker_id = tm.id
-        JOIN "Users" u ON m.dispatcher_id = u.id
-        WHERE m.marker_time >= NOW() - INTERVAL '7 days'
-        ORDER BY m.marker_time DESC
-    """)
+    cur.callproc('get_all_active_markers')
     result = cur.fetchall()
     
     cur.close()
