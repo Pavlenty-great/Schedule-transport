@@ -61,15 +61,25 @@
                         <td>
                             {% if detail.markers and detail.markers|length > 0 %}
                                 {% for marker in detail.markers %}
-                                <div class="marker-badge marker-{{ marker.marker_type|lower|replace(' ', '') }}">
-                                    {{ marker.marker_type }}
-                                    <span class="marker-time">{{ marker.marker_time.strftime('%d.%m.%Y %H:%M') }}</span>
-                                </div>
+                                    {% if marker.type_marker_id == 1 %}
+                                        <div class="marker-badge marker-podjezhaet">
+                                    {% elif marker.type_marker_id == 2 %}
+                                        <div class="marker-badge marker-na-ostanovke">
+                                    {% elif marker.type_marker_id == 3 %}
+                                        <div class="marker-badge marker-ushes">
+                                    {% elif marker.type_marker_id == 4 %}
+                                        <div class="marker-badge marker-zaderzhivaetsya">
+                                    {% else %}
+                                        <div class="marker-badge">
+                                    {% endif %}
+                                        {{ marker.marker_type }}
+                                        <span class="marker-time">{{ marker.marker_time.strftime('%d.%m.%Y %H:%M') }}</span>
+                                    </div>
                                 {% endfor %}
                             {% else %}
                                 <span style="color: #999; font-size: 12px;">Нет отметок</span>
                             {% endif %}
-                         </td>
+                        </td>
                      </tr>
                     {% endfor %}
                 </tbody>
