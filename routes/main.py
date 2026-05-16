@@ -113,6 +113,12 @@ def route_details(route_id):
         
         cur.callproc('get_route_details', [route_id, weekday_id, trip_number])
         route_details = cur.fetchall()
+
+        # Добавляем маркеры для каждой остановки
+        for detail in route_details:
+            cur.callproc('get_markers_for_route_stop', [route_id, detail['stop_id']])
+            markers = cur.fetchall()
+            detail['markers'] = markers
         
     except Exception as e:
         print(f"Ошибка: {e}")

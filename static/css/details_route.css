@@ -109,3 +109,52 @@ main {
     text-decoration: underline;
     color: #0055cc;
 }
+
+/* Маркеры */
+.marker-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    margin: 2px 0;
+}
+
+.marker-podjezhaet {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.marker-na-ostanovke {
+    background-color: #28a745;
+    color: white;
+}
+
+.marker-ushes {
+    background-color: #dc3545;
+    color: white;
+}
+
+.marker-zaderzhivaetsya {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.marker-time {
+    font-size: 10px;
+    color: rgba(0,0,0,0.6);
+    margin-left: 5px;
+}
+
+.marker-na-ostanovke .marker-time,
+.marker-ushes .marker-time,
+.marker-zaderzhivaetsya .marker-time {
+    color: rgba(255,255,255,0.8);
+}
+
+.stop-name-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}

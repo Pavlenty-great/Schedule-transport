@@ -22,7 +22,7 @@
         </div>
 
         {% if error_message %}
-            <div class="error-message" style="background-color: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #c62828;">
+            <div class="error-message">
                 {{ error_message }}
             </div>
         {% endif %}
@@ -34,18 +34,21 @@
                         <th>Станция</th>
                         <th>Отправление</th>
                         <th>Время в пути</th>
+                        <th>Статус</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for detail in route_details %}
                     <tr>
                         <td>
-                            <a href="/stop/{{ detail.stop_id }}?date={{ request.args.get('date') }}&day={{ request.args.get('day') }}" class="stop-link">
-                                {{ detail.stop_name }}
-                            </a>
-                            {% if detail.settlement_name %}
-                                <span class="settlement-name">({{ detail.settlement_name }})</span>
-                            {% endif %}
+                            <div class="stop-name-container">
+                                <a href="/stop/{{ detail.stop_id }}?date={{ request.args.get('date') }}&day={{ request.args.get('day') }}" class="stop-link">
+                                    {{ detail.stop_name }}
+                                </a>
+                                {% if detail.settlement_name %}
+                                    <span class="settlement-name">({{ detail.settlement_name }})</span>
+                                {% endif %}
+                            </div>
                         </td>
                         <td>{{ detail.departure_time.strftime('%H:%M') if detail.departure_time else '--:--' }}</td>
                         <td>
@@ -55,12 +58,24 @@
                                 0 минут
                             {% endif %}
                         </td>
-                    </tr>
+                        <td>
+                            {% if detail.markers and detail.markers|length > 0 %}
+                                {% for marker in detail.markers %}
+                                <div class="marker-badge marker-{{ marker.marker_type|lower|replace(' ', '') }}">
+                                    {{ marker.marker_type }}
+                                    <span class="marker-time">{{ marker.marker_time.strftime('%d.%m.%Y %H:%M') }}</span>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <span style="color: #999; font-size: 12px;">Нет отметок</span>
+                            {% endif %}
+                         </td>
+                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            <div class="no-results" style="text-align: center; padding: 40px; color: #666;">
+            <div class="no-results">
                 <p>😕 Информация по маршруту не найдена</p>
             </div>
         {% endif %}
