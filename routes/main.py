@@ -113,10 +113,10 @@ def route_details(route_id):
         
         cur.callproc('get_route_details', [route_id, weekday_id, trip_number])
         route_details = cur.fetchall()
-
-        # Добавляем маркеры для каждой остановки
+        
+        # Получаем маркеры для каждого остановки и конкретного рейса
         for detail in route_details:
-            cur.callproc('get_markers_for_route_stop', [route_id, detail['stop_id']])
+            cur.callproc('get_markers_for_route_stop_trip', [route_id, detail['stop_id'], trip_number])
             markers = cur.fetchall()
             detail['markers'] = markers
         

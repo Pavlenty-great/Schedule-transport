@@ -312,29 +312,6 @@ def api_get_markers():
     return jsonify(result)
 
 
-@dispatcher_bp.route('/api/dispatcher/markers', methods=['POST'])
-@login_required
-@role_required(['Администратор', 'Диспетчер'])
-def api_add_marker():
-    data = request.json
-    
-    conn = get_db_connection()
-    cur = conn.cursor()
-    
-    cur.callproc('add_manual_marker', [
-        data['stop_id'],
-        data['route_id'],
-        data['type_marker_id'],
-        session['user_id']
-    ])
-    conn.commit()
-    
-    cur.close()
-    conn.close()
-    
-    return jsonify({'success': True})
-
-
 @dispatcher_bp.route('/api/dispatcher/markers', methods=['DELETE'])
 @login_required
 @role_required(['Администратор', 'Диспетчер'])
@@ -421,3 +398,54 @@ def api_get_all_stops():
     conn.close()
     
     return jsonify(result)
+
+
+@dispatcher_bp.route('/api/dispatcher/markers', methods=['POST'])
+@login_required
+@role_required(['Администратор', 'Диспетчер'])
+def api_add_marker():
+    data = request.json
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.callproc('add_manual_marker', [
+        data['stop_id'],
+        data['route_id'],
+        data['type_marker_id'],
+        session['user_id'],
+        data.get('trip_number')  # добавляем trip_number
+    ])
+    conn.commit()
+    
+    cur.close()
+    conn.close()
+    
+    return jsonify({'success': True})
+
+
+@dispatcher_bp.route('/api/dispatcher/route/<int:route_id>/trips')
+@login_required
+@role_required(['Администратор', 'Диспетчер'])
+def api_get_route_trips(route_id):
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    cur.execute("""
+        SELECT DISTINCT trip_number, MIN(time_departure) as departure_time
+        FROM "Schedules"
+        WHERE route_id = %s AND trip_number IS NOT NULL
+        GROUP BY trip_number
+        ORDER BY MIN(time_departure)
+    """, (route_id,))
+    trips = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
+    # Преобразуем time в строку для JSON
+    for trip in trips:
+        if trip['departure_time']:
+            trip['departure_time'] = trip['departure_time'].strftime('%H:%M')
+    
+    return jsonify(trips)

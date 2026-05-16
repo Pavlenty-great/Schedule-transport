@@ -296,40 +296,46 @@ async function loadMarkers() {
 }
 
 document.getElementById('add-marker-btn')?.addEventListener('click', () => {
+    // Сбрасываем значения
+    document.getElementById('marker-route-id').value = '';
+    document.getElementById('marker-trip-number').innerHTML = '<option value="">Сначала выберите маршрут</option>';
+    document.getElementById('marker-stop-id').innerHTML = '<option value="">Сначала выберите маршрут</option>';
+    document.getElementById('marker-type-id').value = '';
     openModal('marker-modal');
-    loadStopsForMarker();
 });
 
-async function loadStopsForMarker() {
+async function loadTripsForMarker() {
     const routeId = document.getElementById('marker-route-id').value;
-    const stopSelect = document.getElementById('marker-stop-id');
+    const tripSelect = document.getElementById('marker-trip-number');
     
     if (!routeId) {
-        stopSelect.innerHTML = '<option value="">Сначала выберите маршрут</option>';
+        tripSelect.innerHTML = '<option value="">Сначала выберите маршрут</option>';
         return;
     }
     
-    stopSelect.innerHTML = '<option value="">Загрузка...</option>';
+    tripSelect.innerHTML = '<option value="">Загрузка...</option>';
     
     try {
-        // Получаем остановки только для выбранного маршрута
-        const response = await fetch(`/api/dispatcher/route/${routeId}/stops`);
-        const stops = await response.json();
+        const response = await fetch(`/api/dispatcher/route/${routeId}/trips`);
+        const trips = await response.json();
         
-        if (stops.length === 0) {
-            stopSelect.innerHTML = '<option value="">Нет остановок на маршруте</option>';
+        if (trips.length === 0) {
+            tripSelect.innerHTML = '<option value="">Нет рейсов на маршруте</option>';
         } else {
-            stopSelect.innerHTML = '<option value="">Выберите остановку</option>' + 
-                stops.map(s => `<option value="${s.stop_id}">${s.stop_name} ${s.settlement_name ? '('+s.settlement_name+')' : ''}</option>`).join('');
+            tripSelect.innerHTML = '<option value="">Выберите рейс</option>' + 
+                trips.map(t => `<option value="${t.trip_number}">Рейс №${t.trip_number} (${t.departure_time})</option>`).join('');
         }
     } catch (error) {
         console.error('Ошибка:', error);
-        stopSelect.innerHTML = '<option value="">Ошибка загрузки остановок</option>';
+        tripSelect.innerHTML = '<option value="">Ошибка загрузки рейсов</option>';
     }
 }
 
-// При изменении маршрута загружаем его остановки
-document.getElementById('marker-route-id')?.addEventListener('change', loadStopsForMarker);
+// Добавляем обработчик изменения маршрута для загрузки рейсов
+document.getElementById('marker-route-id')?.addEventListener('change', () => {
+    loadStopsForMarker();
+    loadTripsForMarker();  // добавляем
+});
 
 document.getElementById('marker-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -337,7 +343,8 @@ document.getElementById('marker-form')?.addEventListener('submit', async (e) => 
     const formData = {
         route_id: document.getElementById('marker-route-id').value,
         stop_id: document.getElementById('marker-stop-id').value,
-        type_marker_id: document.getElementById('marker-type-id').value
+        type_marker_id: document.getElementById('marker-type-id').value,
+        trip_number: document.getElementById('marker-trip-number').value
     };
     
     if (!formData.stop_id) {
@@ -400,22 +407,21 @@ async function deleteMarker(markerId) {
 
 async function editMarker(markerId) {
     try {
-        // Получаем данные маркера
         const response = await fetch(`/api/dispatcher/markers/${markerId}`);
         const marker = await response.json();
         
-        // Заполняем форму
         document.getElementById('edit-marker-id').value = marker.id;
         document.getElementById('edit-marker-route-id').value = marker.route_id;
         document.getElementById('edit-marker-type-id').value = marker.type_marker_id;
         
+        // Загружаем рейсы для выбранного маршрута
+        await loadTripsForEditMarker(marker.route_id);
+        document.getElementById('edit-marker-trip-number').value = marker.trip_number;
+        
         // Загружаем остановки для выбранного маршрута
         await loadStopsForEditMarker(marker.route_id);
-        
-        // Устанавливаем выбранную остановку
         document.getElementById('edit-marker-stop-id').value = marker.stop_id;
         
-        // Открываем модальное окно
         openModal('edit-marker-modal');
     } catch (error) {
         console.error('Ошибка:', error);
@@ -462,6 +468,7 @@ document.getElementById('edit-marker-form')?.addEventListener('submit', async (e
     const markerId = document.getElementById('edit-marker-id').value;
     const formData = {
         route_id: document.getElementById('edit-marker-route-id').value,
+        trip_number: document.getElementById('edit-marker-trip-number').value,
         stop_id: document.getElementById('edit-marker-stop-id').value,
         type_marker_id: document.getElementById('edit-marker-type-id').value
     };
@@ -481,7 +488,7 @@ document.getElementById('edit-marker-form')?.addEventListener('submit', async (e
         const result = await response.json();
         if (result.success) {
             closeModal('edit-marker-modal');
-            loadMarkers(); // Обновляем список маркеров
+            loadMarkers();
         } else {
             alert('Ошибка при обновлении маркера');
         }
@@ -552,3 +559,63 @@ document.getElementById('edit-stop-form')?.addEventListener('submit', async (e) 
         alert('Ошибка при обновлении остановки');
     }
 });
+
+// Загрузка остановок для выбранного маршрута
+async function loadStopsForMarker() {
+    const routeId = document.getElementById('marker-route-id').value;
+    const stopSelect = document.getElementById('marker-stop-id');
+    
+    if (!stopSelect) return;
+    
+    if (!routeId) {
+        stopSelect.innerHTML = '<option value="">Сначала выберите маршрут</option>';
+        return;
+    }
+    
+    stopSelect.innerHTML = '<option value="">Загрузка...</option>';
+    
+    try {
+        const response = await fetch(`/api/dispatcher/route/${routeId}/stops`);
+        const stops = await response.json();
+        
+        if (stops.length === 0) {
+            stopSelect.innerHTML = '<option value="">Нет остановок на маршруте</option>';
+        } else {
+            stopSelect.innerHTML = '<option value="">Выберите остановку</option>' + 
+                stops.map(s => `<option value="${s.stop_id}">${s.stop_name} ${s.settlement_name ? '('+s.settlement_name+')' : ''}</option>`).join('');
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        stopSelect.innerHTML = '<option value="">Ошибка загрузки остановок</option>';
+    }
+}
+
+// Загрузка рейсов для редактирования маркера
+async function loadTripsForEditMarker(routeId) {
+    const tripSelect = document.getElementById('edit-marker-trip-number');
+    
+    if (!tripSelect) return;
+    
+    if (!routeId) {
+        tripSelect.innerHTML = '<option value="">Сначала выберите маршрут</option>';
+        return;
+    }
+    
+    tripSelect.innerHTML = '<option value="">Загрузка...</option>';
+    
+    try {
+        const response = await fetch(`/api/dispatcher/route/${routeId}/trips`);
+        const trips = await response.json();
+        
+        if (trips.length === 0) {
+            tripSelect.innerHTML = '<option value="">Нет рейсов на маршруте</option>';
+        } else {
+            tripSelect.innerHTML = trips.map(t => 
+                `<option value="${t.trip_number}">Рейс №${t.trip_number} (${t.departure_time})</option>`
+            ).join('');
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        tripSelect.innerHTML = '<option value="">Ошибка загрузки рейсов</option>';
+    }
+}
