@@ -899,6 +899,128 @@ window.deleteTransport = async function(transportId) {
     }
 };
 
+
+// ========== УПРАВЛЕНИЕ МАРШРУТАМИ ==========
+async function loadRoutes() {
+    const tbody = document.getElementById('routes-tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<td><td colspan="5" class="loading">Загрузка...<\/td><\/tr>';
+    
+    try {
+        const response = await fetch('/api/admin/routes');
+        const routes = await response.json();
+        
+        if (routes.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Нет маршрутов<\/td><\/tr>';
+            return;
+        }
+        
+        tbody.innerHTML = routes.map(r => `
+            <tr>
+                <td>${r.route_id}<\/td>
+                <td>${r.route_number}<\/td>
+                <td>${r.route_name}<\/td>
+                <td>${r.transport_type_name}<\/td>
+                <td>
+                    <button class="btn-edit" onclick="editRoute(${r.route_id})">Изменить<\/button>
+                    <button class="btn-danger" onclick="deleteRoute(${r.route_id})">Удалить<\/button>
+                 <\/td>
+             <\/tr>
+        `).join('');
+    } catch (error) {
+        console.error('Ошибка:', error);
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Ошибка загрузки<\/td><\/tr>';
+    }
+}
+
+const addRouteBtn = document.getElementById('add-route-btn');
+if (addRouteBtn) {
+    addRouteBtn.addEventListener('click', () => {
+        document.getElementById('route-modal-title').textContent = 'Добавление маршрута';
+        document.getElementById('route-id').value = '';
+        document.getElementById('route-number').value = '';
+        document.getElementById('route-name').value = '';
+        document.getElementById('route-transport-type-id').value = '';
+        openModal('route-modal');
+    });
+}
+
+const routeForm = document.getElementById('route-form');
+if (routeForm) {
+    routeForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = {
+            id: document.getElementById('route-id').value || null,
+            number: document.getElementById('route-number').value,
+            name: document.getElementById('route-name').value,
+            transport_type_id: document.getElementById('route-transport-type-id').value
+        };
+        
+        try {
+            const response = await fetch('/api/admin/routes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                closeModal('route-modal');
+                routeForm.reset();
+                loadRoutes();
+                showMessage('Маршрут сохранён', 'success');
+            } else {
+                alert(result.error || 'Ошибка при сохранении');
+            }
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Ошибка при сохранении');
+        }
+    });
+}
+
+window.editRoute = async function(routeId) {
+    try {
+        const response = await fetch(`/api/admin/routes/${routeId}`);
+        const route = await response.json();
+        
+        document.getElementById('route-modal-title').textContent = 'Редактирование маршрута';
+        document.getElementById('route-id').value = route.route_id;
+        document.getElementById('route-number').value = route.route_number;
+        document.getElementById('route-name').value = route.route_name;
+        document.getElementById('route-transport-type-id').value = route.transport_type_id;
+        
+        openModal('route-modal');
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Не удалось загрузить данные маршрута');
+    }
+};
+
+window.deleteRoute = async function(routeId) {
+    if (!confirm('Удалить этот маршрут? Все связанные остановки, расписание и транспорт также будут удалены.')) return;
+    
+    try {
+        const response = await fetch(`/api/admin/routes/${routeId}`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            loadRoutes();
+            showMessage('Маршрут удалён', 'success');
+        } else {
+            alert(result.error || 'Ошибка при удалении');
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Ошибка при удалении');
+    }
+};
+
+
 // ========== ИНИЦИАЛИЗАЦИЯ ==========
 if (document.getElementById('tab-markers')) {
     loadMarkers();
@@ -908,4 +1030,7 @@ if (document.getElementById('tab-users')) {
 }
 if (document.getElementById('tab-transport')) {
     loadTransport();
+}
+if (document.getElementById('tab-routes')) {
+    loadRoutes();
 }

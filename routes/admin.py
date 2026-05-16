@@ -35,7 +35,7 @@ def admin_dashboard():
     conn = get_db_connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
-    cur.callproc('get_all_routes')
+    cur.callproc('get_all_routes_admin')
     routes = cur.fetchall()
     
     cur.callproc('get_all_days')
@@ -50,7 +50,7 @@ def admin_dashboard():
     cur.execute('SELECT id as role_id, name as role_name FROM "Roles" ORDER BY id')
     roles = cur.fetchall()
     
-    cur.execute('SELECT id as type_id, name as type_name FROM "Transport_type" ORDER BY id')
+    cur.callproc('get_all_transport_types')
     transport_types = cur.fetchall()
     
     cur.close()
@@ -282,5 +282,91 @@ def api_delete_transport(transport_id):
     
     cur.close()
     conn.close()
+    
+    return jsonify({'success': success})
+
+
+# ========== API ДЛЯ УПРАВЛЕНИЯ МАРШРУТАМИ ==========
+
+@admin_bp.route('/api/admin/routes', methods=['GET'])
+@login_required
+@role_required(['Администратор'])
+def api_get_routes():
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    cur.callproc('get_all_routes_admin')
+    routes = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
+    return jsonify(routes)
+
+
+@admin_bp.route('/api/admin/routes/<int:route_id>', methods=['GET'])
+@login_required
+@role_required(['Администратор'])
+def api_get_route(route_id):
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    cur.callproc('get_route_by_id', [route_id])
+    route = cur.fetchone()
+    
+    cur.close()
+    conn.close()
+    
+    if not route:
+        return jsonify({'error': 'Маршрут не найден'}), 404
+    
+    return jsonify(route)
+
+
+@admin_bp.route('/api/admin/routes', methods=['POST'])
+@login_required
+@role_required(['Администратор'])
+def api_create_update_route():
+    data = request.json
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        cur.callproc('upsert_route', [
+            data.get('id'),
+            data['number'],
+            data['name'],
+            data['transport_type_id']
+        ])
+        conn.commit()
+        success = True
+    except Exception as e:
+        print(f"Ошибка при сохранении маршрута: {e}")
+        conn.rollback()
+        success = False
+    finally:
+        cur.close()
+        conn.close()
+    
+    return jsonify({'success': success})
+
+
+@admin_bp.route('/api/admin/routes/<int:route_id>', methods=['DELETE'])
+@login_required
+@role_required(['Администратор'])
+def api_delete_route(route_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.callproc('delete_route', [route_id])
+    conn.commit()
+    success = cur.fetchone()[0]
+    
+    cur.close()
+    conn.close()
+    
+    if not success:
+        return jsonify({'success': False, 'error': 'Невозможно удалить маршрут. У него есть связанные остановки, расписание или транспорт'}), 400
     
     return jsonify({'success': success})

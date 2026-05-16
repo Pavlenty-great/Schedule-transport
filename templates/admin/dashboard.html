@@ -14,15 +14,31 @@
         
         <!-- Вкладки -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="schedule">📅 Расписание</button>
+            <button class="tab-btn active" data-tab="routes">🛣️ Маршруты</button>
+            <button class="tab-btn" data-tab="schedule">📅 Расписание</button>
             <button class="tab-btn" data-tab="route-stops">📍 Остановки маршрутов</button>
             <button class="tab-btn" data-tab="markers">⚠️ Ручные маркеры</button>
             <button class="tab-btn" data-tab="transport">🚌 Транспорт</button>
             <button class="tab-btn" data-tab="users">👥 Пользователи и роли</button>
         </div>
         
+        <!-- ========== ВКЛАДКА МАРШРУТЫ ========== -->
+        <div id="tab-routes" class="tab-content active">
+            <div class="toolbar">
+                <button id="add-route-btn" class="btn-success">+ Добавить маршрут</button>
+            </div>
+            <div class="table-container">
+                <table id="routes-table">
+                    <thead>
+                        <tr><th>ID</th><th>Номер</th><th>Название</th><th>Тип транспорта</th><th>Действия</th></tr>
+                    </thead>
+                    <tbody id="routes-tbody"><tr><td colspan="5" style="text-align: center;">Загрузка...</tbody>
+                </table>
+            </div>
+        </div>
+        
         <!-- ========== ВКЛАДКА РАСПИСАНИЕ ========== -->
-        <div id="tab-schedule" class="tab-content active">
+        <div id="tab-schedule" class="tab-content">
             <div class="toolbar">
                 <select id="route-filter">
                     <option value="">Все маршруты</option>
@@ -42,7 +58,7 @@
             <div class="table-container">
                 <table id="schedule-table">
                     <thead><tr><th>Маршрут</th><th>Отправление</th><th>Прибытие</th><th>№ рейса</th><th>Действия</th></tr></thead>
-                    <tbody id="schedule-tbody"><td><td colspan="5" style="text-align: center;">Выберите маршрут и нажмите "Загрузить"</td></tr></tbody>
+                    <tbody id="schedule-tbody"><td><td colspan="5" style="text-align: center;">Выберите маршрут и нажмите "Загрузить"</tbody>
                 </table>
             </div>
         </div>
@@ -62,7 +78,7 @@
             <div class="table-container">
                 <table id="stops-table">
                     <thead><tr><th>Порядок</th><th>Остановка</th><th>Населённый пункт</th><th>Действия</th></tr></thead>
-                    <tbody id="stops-tbody"><tr><td colspan="4" style="text-align: center;">Выберите маршрут и нажмите "Загрузить"</td></tr></tbody>
+                    <tbody id="stops-tbody"><td><td colspan="4" style="text-align: center;">Выберите маршрут и нажмите "Загрузить"</tbody>
                 </table>
             </div>
         </div>
@@ -75,7 +91,7 @@
             <div class="table-container">
                 <table id="markers-table">
                     <thead><tr><th>Дата/время</th><th>Остановка</th><th>Маршрут</th><th>Тип маркера</th><th>Диспетчер</th><th>Действия</th></tr></thead>
-                    <tbody id="markers-tbody"><tr><td colspan="6" style="text-align: center;">Загрузка...</td></tr></tbody>
+                    <tbody id="markers-tbody"><tr><td colspan="6" style="text-align: center;">Загрузка...</tbody>
                 </table>
             </div>
         </div>
@@ -90,7 +106,7 @@
                     <thead>
                         <tr><th>ID</th><th>Модель</th><th>Вместимость</th><th>Тип</th><th>Маршрут</th><th>Номер ТС</th><th>Действия</th></tr>
                     </thead>
-                    <tbody id="transport-tbody"><tr><td colspan="7" style="text-align: center;">Загрузка...</td></tr></tbody>
+                    <tbody id="transport-tbody"><tr><td colspan="7" style="text-align: center;">Загрузка...</tbody>
                 </table>
             </div>
         </div>
@@ -103,7 +119,7 @@
             <div class="table-container">
                 <table id="users-table">
                     <thead><tr><th>ID</th><th>Имя</th><th>Фамилия</th><th>Отчество</th><th>Логин</th><th>Роль</th><th>Действия</th></tr></thead>
-                    <tbody id="users-tbody"><tr><td colspan="7" style="text-align: center;">Загрузка...</td></tr></tbody>
+                    <tbody id="users-tbody"><tr><td colspan="7" style="text-align: center;">Загрузка...</tbody>
                 </table>
             </div>
         </div>
