@@ -1,33 +1,11 @@
 from flask import Blueprint, render_template, request, session, jsonify, redirect, url_for, abort
+from decorators import login_required, role_required
 from functools import wraps
 from db import get_db_connection
 import psycopg2.extras
 import json
 
 dispatcher_bp = Blueprint('dispatcher', __name__)
-
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:
-            return redirect(url_for('auth.login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-def role_required(allowed_roles):
-    def decorator(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            if 'user_id' not in session:
-                return redirect(url_for('auth.login'))
-            if session.get('role') not in allowed_roles:
-                abort(403)
-            return f(*args, **kwargs)
-        return decorated_function
-    return decorator
-
 
 @dispatcher_bp.route('/dispatcher')
 @login_required

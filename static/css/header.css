@@ -35,11 +35,6 @@ header {
     align-items: center;
 }
 
-.find-btn {
-    align-self: center;
-    margin-top: 18px;
-}
-
 input,
 button:not(.profile-btn button),
 select {
@@ -49,11 +44,6 @@ select {
     box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 4px;
-}
-
-.find-btn button {
-    width: 100px;
-    height: 35px;
 }
 
 .profile-btn button {
