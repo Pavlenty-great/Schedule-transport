@@ -90,6 +90,9 @@ async function editSchedule(id) {
         
         document.getElementById('schedule-id').value = data.id;
         document.getElementById('modal-route-id').value = data.route_id;
+        
+        // Загружаем остановки для выбранного маршрута
+        await loadStopsForSchedule();
         document.getElementById('modal-stop-id').value = data.stop_id;
         document.getElementById('modal-day-id').value = data.day_id;
         document.getElementById('modal-time').value = data.time_departure;
@@ -619,4 +622,50 @@ async function loadTripsForEditMarker(routeId) {
         console.error('Ошибка:', error);
         tripSelect.innerHTML = '<option value="">Ошибка загрузки рейсов</option>';
     }
+}
+
+// Загрузка остановок для выбранного маршрута (для расписания)
+async function loadStopsForSchedule() {
+    const routeId = document.getElementById('modal-route-id').value;
+    const stopSelect = document.getElementById('modal-stop-id');
+    
+    if (!stopSelect) return;
+    
+    if (!routeId) {
+        stopSelect.innerHTML = '<option value="">Сначала выберите маршрут</option>';
+        return;
+    }
+    
+    stopSelect.innerHTML = '<option value="">Загрузка...</option>';
+    
+    try {
+        const response = await fetch(`/api/dispatcher/route/${routeId}/stops`);
+        const stops = await response.json();
+        
+        if (stops.length === 0) {
+            stopSelect.innerHTML = '<option value="">Нет остановок на маршруте</option>';
+        } else {
+            stopSelect.innerHTML = '<option value="">Выберите остановку</option>' + 
+                stops.map(s => `<option value="${s.stop_id}">${s.stop_name} ${s.settlement_name ? '('+s.settlement_name+')' : ''}</option>`).join('');
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        stopSelect.innerHTML = '<option value="">Ошибка загрузки остановок</option>';
+    }
+}
+
+// Добавляем обработчик изменения маршрута в модальном окне расписания
+document.getElementById('modal-route-id')?.addEventListener('change', loadStopsForSchedule);
+
+// При открытии модального окна добавления рейса - сбрасываем и загружаем остановки
+const addScheduleBtn = document.getElementById('add-schedule-btn');
+if (addScheduleBtn) {
+    addScheduleBtn.addEventListener('click', () => {
+        document.getElementById('schedule-id').value = '';
+        document.getElementById('schedule-form').reset();
+        document.getElementById('modal-route-id').value = '';
+        document.getElementById('modal-stop-id').innerHTML = '<option value="">Сначала выберите маршрут</option>';
+        document.getElementById('schedule-modal-title').textContent = 'Добавление рейса';
+        openModal('schedule-modal');
+    });
 }
