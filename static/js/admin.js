@@ -1,5 +1,3 @@
-console.log('admin.js загружен');
-
 // ========== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ==========
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -21,7 +19,6 @@ function closeModal(modalId) {
     if (modal) modal.style.display = 'none';
 }
 
-// Закрытие модальных окон
 document.querySelectorAll('.close').forEach(closeBtn => {
     closeBtn.addEventListener('click', () => {
         const modal = closeBtn.closest('.modal');
@@ -63,7 +60,6 @@ async function loadStopsForRoute(routeId) {
     }
 }
 
-// Обработчик изменения маршрута в модальном окне расписания
 const modalRouteSelect = document.getElementById('modal-route-id');
 if (modalRouteSelect) {
     modalRouteSelect.addEventListener('change', function() {
@@ -94,7 +90,7 @@ async function loadSchedule() {
     const tbody = document.getElementById('schedule-tbody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="5" class="loading">Загрузка...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="loading">Загрузка...<\/td><\/tr>';
     
     try {
         let url = '/api/dispatcher/schedule';
@@ -107,7 +103,7 @@ async function loadSchedule() {
         const schedules = await response.json();
         
         if (schedules.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Нет данных</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Нет данных<\/td><\/tr>';
             return;
         }
         
@@ -118,19 +114,19 @@ async function loadSchedule() {
         
         tbody.innerHTML = schedules.map(s => `
             <tr>
-                <td>${s.route_number} ${s.route_name}</td>
-                <td>${s.departure_time}</td>
-                <td>${s.arrival_time}</td>
-                <td>${s.trip_number}</td>
+                <td>${s.route_number} ${s.route_name}<\/td>
+                <td>${s.departure_time}<\/td>
+                <td>${s.arrival_time}<\/td>
+                <td>${s.trip_number}<\/td>
                 <td>
-                    <button class="btn-edit" onclick="editSchedule(${s.schedule_id})">Изменить</button>
-                    <button class="btn-danger" onclick="deleteSchedule(${s.schedule_id})">Удалить</button>
-                </td>
-            </tr>
+                    <button class="btn-edit" onclick="editSchedule(${s.schedule_id})">Изменить<\/button>
+                    <button class="btn-danger" onclick="deleteSchedule(${s.schedule_id})">Удалить<\/button>
+                 <\/td>
+             <\/tr>
         `).join('');
     } catch (error) {
         console.error('Ошибка:', error);
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Ошибка загрузки</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Ошибка загрузки<\/td><\/tr>';
     }
 }
 
@@ -244,31 +240,31 @@ async function loadRouteStops() {
     const tbody = document.getElementById('stops-tbody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="4" class="loading">Загрузка...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" class="loading">Загрузка...<\/td><\/tr>';
     
     try {
         const response = await fetch(`/api/dispatcher/route/${routeId}/stops`);
         const stops = await response.json();
         
         if (stops.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Нет остановок</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Нет остановок<\/td><\/tr>';
             return;
         }
         
         tbody.innerHTML = stops.map(s => `
             <tr>
-                <td>${s.order_number}</td>
-                <td>${s.stop_name}</td>
-                <td>${s.settlement_name || '—'}</td>
+                <td>${s.order_number}<\/td>
+                <td>${s.stop_name}<\/td>
+                <td>${s.settlement_name || '—'}<\/td>
                 <td>
-                    <button class="btn-edit" onclick="editStopInRoute(${s.stop_id})">Изменить</button>
-                    <button class="btn-danger" onclick="removeStopFromRoute(${s.stop_id})">Удалить</button>
-                </td>
-            </tr>
+                    <button class="btn-edit" onclick="editStopInRoute(${s.stop_id})">Изменить<\/button>
+                    <button class="btn-danger" onclick="removeStopFromRoute(${s.stop_id})">Удалить<\/button>
+                 <\/td>
+             <\/tr>
         `).join('');
     } catch (error) {
         console.error('Ошибка:', error);
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Ошибка загрузки</td></tr>';
+        tbody.innerHTML = '<td><td colspan="4" style="text-align: center; color: red;">Ошибка загрузки<\/td><\/tr>';
     }
 }
 
@@ -393,33 +389,33 @@ async function loadMarkers() {
     const tbody = document.getElementById('markers-tbody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="6" class="loading">Загрузка...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="loading">Загрузка...<\/td><\/tr>';
     
     try {
         const response = await fetch('/api/dispatcher/markers');
         const markers = await response.json();
         
         if (markers.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Нет активных маркеров</td></tr>';
+            tbody.innerHTML = '</tr><td colspan="6" style="text-align: center;">Нет активных маркеров<\/td><\/tr>';
             return;
         }
         
         tbody.innerHTML = markers.map(m => `
             <tr>
-                <td>${new Date(m.marker_time).toLocaleString()}</td>
-                <td>${m.stop_name}</td>
-                <td>${m.route_name}</td>
-                <td>${m.marker_type}</td>
-                <td>${m.dispatcher_name}</td>
+                <td>${new Date(m.marker_time).toLocaleString()}<\/td>
+                <td>${m.stop_name}<\/td>
+                <td>${m.route_name}<\/td>
+                <td>${m.marker_type}<\/td>
+                <td>${m.dispatcher_name}<\/td>
                 <td>
-                    <button class="btn-edit" onclick="editMarker(${m.marker_id})">Изменить</button>
-                    <button class="btn-danger" onclick="deleteMarker(${m.marker_id})">Удалить</button>
-                </td>
-            </tr>
+                    <button class="btn-edit" onclick="editMarker(${m.marker_id})">Изменить<\/button>
+                    <button class="btn-danger" onclick="deleteMarker(${m.marker_id})">Удалить<\/button>
+                 <\/td>
+             <\/tr>
         `).join('');
     } catch (error) {
         console.error('Ошибка:', error);
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Ошибка загрузки</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Ошибка загрузки<\/td><\/tr>';
     }
 }
 
@@ -623,34 +619,34 @@ async function loadUsers() {
     const tbody = document.getElementById('users-tbody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...<\/td><\/tr>';
     
     try {
         const response = await fetch('/api/admin/users');
         const users = await response.json();
         
         if (users.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет пользователей</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет пользователей<\/td><\/tr>';
             return;
         }
         
         tbody.innerHTML = users.map(u => `
             <tr>
-                <td>${u.id}</td>
-                <td>${u.name}</td>
-                <td>${u.surname}</td>
-                <td>${u.patronymic || '—'}</td>
-                <td>${u.login}</td>
-                <td><span class="role-badge role-${u.role === 'Администратор' ? 'admin' : (u.role === 'Диспетчер' ? 'dispatcher' : 'user')}">${u.role}</span></td>
+                <td>${u.id}<\/td>
+                <td>${u.name}<\/td>
+                <td>${u.surname}<\/td>
+                <td>${u.patronymic || '—'}<\/td>
+                <td>${u.login}<\/td>
+                <td><span class="role-badge role-${u.role === 'Администратор' ? 'admin' : (u.role === 'Диспетчер' ? 'dispatcher' : 'user')}">${u.role}</span><\/td>
                 <td>
-                    <button class="btn-edit" onclick="editUser(${u.id})">Изменить</button>
-                    <button class="btn-danger" onclick="deleteUser(${u.id})">Удалить</button>
-                </td>
-            </tr>
+                    <button class="btn-edit" onclick="editUser(${u.id})">Изменить<\/button>
+                    <button class="btn-danger" onclick="deleteUser(${u.id})">Удалить<\/button>
+                 <\/td>
+             <\/tr>
         `).join('');
     } catch (error) {
         console.error('Ошибка:', error);
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки<\/td><\/tr>';
     }
 }
 
@@ -776,34 +772,34 @@ async function loadTransport() {
     const tbody = document.getElementById('transport-tbody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...<\/td><\/tr>';
     
     try {
         const response = await fetch('/api/admin/transport');
         const transport = await response.json();
         
         if (transport.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет транспортных средств</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет транспортных средств<\/td><\/tr>';
             return;
         }
         
         tbody.innerHTML = transport.map(t => `
             <tr>
-                <td>${t.id}</td>
-                <td>${t.model}</td>
-                <td>${t.capacity}</td>
-                <td>${t.transport_type}</td>
-                <td>${t.route_number} ${t.route_name}</td>
-                <td>${t.vehicle_number}</td>
+                <td>${t.id}<\/td>
+                <td>${t.model}<\/td>
+                <td>${t.capacity}<\/td>
+                <td>${t.transport_type}<\/td>
+                <td>${t.route_number} ${t.route_name}<\/td>
+                <td>${t.vehicle_number}<\/td>
                 <td>
-                    <button class="btn-edit" onclick="editTransport(${t.id})">Изменить</button>
-                    <button class="btn-danger" onclick="deleteTransport(${t.id})">Удалить</button>
-                </td>
-            </tr>
+                    <button class="btn-edit" onclick="editTransport(${t.id})">Изменить<\/button>
+                    <button class="btn-danger" onclick="deleteTransport(${t.id})">Удалить<\/button>
+                 <\/td>
+             <\/tr>
         `).join('');
     } catch (error) {
         console.error('Ошибка:', error);
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки<\/td><\/tr>';
     }
 }
 
@@ -899,38 +895,37 @@ window.deleteTransport = async function(transportId) {
     }
 };
 
-
 // ========== УПРАВЛЕНИЕ МАРШРУТАМИ ==========
 async function loadRoutes() {
     const tbody = document.getElementById('routes-tbody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<td><td colspan="5" class="loading">Загрузка...<\/td><\/tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="loading">Загрузка...</td></tr>';
     
     try {
         const response = await fetch('/api/admin/routes');
         const routes = await response.json();
         
         if (routes.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Нет маршрутов<\/td><\/tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Нет маршрутов</td></tr>';
             return;
         }
         
         tbody.innerHTML = routes.map(r => `
             <tr>
-                <td>${r.route_id}<\/td>
-                <td>${r.route_number}<\/td>
-                <td>${r.route_name}<\/td>
-                <td>${r.transport_type_name}<\/td>
+                <td>${r.route_id}</td>
+                <td>${r.route_number}</td>
+                <td>${r.route_name}</td>
+                <td>${r.transport_type_name}</td>
                 <td>
-                    <button class="btn-edit" onclick="editRoute(${r.route_id})">Изменить<\/button>
-                    <button class="btn-danger" onclick="deleteRoute(${r.route_id})">Удалить<\/button>
-                 <\/td>
-             <\/tr>
+                    <button class="btn-edit" onclick="editRoute(${r.route_id})">Изменить</button>
+                    <button class="btn-danger" onclick="deleteRoute(${r.route_id})">Удалить</button>
+                </td>
+            </tr>
         `).join('');
     } catch (error) {
         console.error('Ошибка:', error);
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Ошибка загрузки<\/td><\/tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Ошибка загрузки</td></tr>';
     }
 }
 
@@ -1019,7 +1014,6 @@ window.deleteRoute = async function(routeId) {
         alert('Ошибка при удалении');
     }
 };
-
 
 // ========== ИНИЦИАЛИЗАЦИЯ ==========
 if (document.getElementById('tab-markers')) {

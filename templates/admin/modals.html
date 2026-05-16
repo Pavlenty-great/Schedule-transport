@@ -235,3 +235,45 @@
         </form>
     </div>
 </div>
+
+<!-- Модальное окно для добавления/редактирования транспорта -->
+<div id="transport-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 id="transport-modal-title">Добавление транспорта</h3>
+        <form id="transport-form">
+            <input type="hidden" id="transport-id" name="id">
+            <div class="form-group">
+                <label>Модель</label>
+                <input type="text" id="transport-model" name="model" required>
+            </div>
+            <div class="form-group">
+                <label>Вместимость (кол-во мест)</label>
+                <input type="number" id="transport-capacity" name="capacity" required min="1">
+            </div>
+            <div class="form-group">
+                <label>Тип транспорта</label>
+                <select id="transport-type-id" name="type_id" required>
+                    <option value="">Выберите тип</option>
+                    {% for transport_type in transport_types %}
+                    <option value="{{ transport_type.type_id }}">{{ transport_type.type_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Маршрут</label>
+                <select id="transport-route-id" name="route_id" required>
+                    <option value="">Выберите маршрут</option>
+                    {% for route in routes %}
+                    <option value="{{ route.route_id }}">{{ route.route_number }} {{ route.route_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Номер транспортного средства</label>
+                <input type="text" id="transport-vehicle-number" name="vehicle_number" required placeholder="А123ВС">
+            </div>
+            <button type="submit" class="btn-primary">Сохранить</button>
+        </form>
+    </div>
+</div>
