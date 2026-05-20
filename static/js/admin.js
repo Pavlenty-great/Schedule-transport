@@ -5,34 +5,34 @@ async function loadUsers() {
     const tbody = document.getElementById('users-tbody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...<\/td><\/tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...</td></tr>';
     
     try {
         const response = await fetch('/api/admin/users');
         const users = await response.json();
         
         if (users.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет пользователей<\/td><\/tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет пользователей</td></tr>';
             return;
         }
         
         tbody.innerHTML = users.map(u => `
             <tr>
-                <td>${u.id}<\/td>
-                <td>${u.name}<\/td>
-                <td>${u.surname}<\/td>
-                <td>${u.patronymic || '—'}<\/td>
-                <td>${u.login}<\/td>
-                <td><span class="role-badge role-${u.role === 'Администратор' ? 'admin' : (u.role === 'Диспетчер' ? 'dispatcher' : 'user')}">${u.role}</span><\/td>
+                <td>${u.id}</td>
+                <td>${u.name}</td>
+                <td>${u.surname}</td>
+                <td>${u.patronymic || '—'}</td>
+                <td>${u.login}</td>
+                <td><span class="role-badge role-${u.role === 'Администратор' ? 'admin' : (u.role === 'Диспетчер' ? 'dispatcher' : 'user')}">${u.role}</span></td>
                 <td>
-                    <button class="btn-edit" onclick="editUser(${u.id})">Изменить<\/button>
-                    <button class="btn-danger" onclick="deleteUser(${u.id})">Удалить<\/button>
-                 <\/td>
-             <\/tr>
+                    <button class="btn-edit" onclick="editUser(${u.id})">Изменить</button>
+                    <button class="btn-danger" onclick="deleteUser(${u.id})">Удалить</button>
+                </td>
+            </tr>
         `).join('');
     } catch (error) {
         console.error('Ошибка:', error);
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки<\/td><\/tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки</td></tr>';
     }
 }
 
@@ -127,34 +127,34 @@ async function loadTransport() {
     const tbody = document.getElementById('transport-tbody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...<\/td><\/tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...</td></tr>';
     
     try {
         const response = await fetch('/api/admin/transport');
         const transport = await response.json();
         
         if (transport.length === 0) {
-            tbody.innerHTML = '<td><td colspan="7" style="text-align: center;">Нет транспортных средств<\/td><\/tr>';
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Нет транспортных средств</td></tr>';
             return;
         }
         
         tbody.innerHTML = transport.map(t => `
             <tr>
-                <td>${t.id}<\/td>
-                <td>${t.model}<\/td>
-                <td>${t.capacity}<\/td>
-                <td>${t.transport_type}<\/td>
-                <td>${t.route_number} ${t.route_name}<\/td>
-                <td>${t.vehicle_number}<\/td>
+                <td>${t.id}</td>
+                <td>${t.model}</td>
+                <td>${t.capacity}</td>
+                <td>${t.transport_type}</td>
+                <td>${t.route_number} ${t.route_name}</td>
+                <td>${t.vehicle_number}</td>
                 <td>
-                    <button class="btn-edit" onclick="editTransport(${t.id})">Изменить<\/button>
-                    <button class="btn-danger" onclick="deleteTransport(${t.id})">Удалить<\/button>
-                 <\/td>
-             <\/tr>
+                    <button class="btn-edit" onclick="editTransport(${t.id})">Изменить</button>
+                    <button class="btn-danger" onclick="deleteTransport(${t.id})">Удалить</button>
+                </td>
+            </tr>
         `).join('');
     } catch (error) {
         console.error('Ошибка:', error);
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки<\/td><\/tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Ошибка загрузки</td></tr>';
     }
 }
 
@@ -243,32 +243,32 @@ async function loadRoutes() {
     const tbody = document.getElementById('routes-tbody');
     if (!tbody) return;
     
-    tbody.innerHTML = '<tr><td colspan="5" class="loading">Загрузка...<\/td><\/tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="loading">Загрузка...</td></tr>';
     
     try {
         const response = await fetch('/api/admin/routes');
         const routes = await response.json();
         
         if (routes.length === 0) {
-            tbody.innerHTML = '<td><td colspan="5" style="text-align: center;">Нет маршрутов<\/td><\/tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Нет маршрутов</td></tr>';
             return;
         }
         
         tbody.innerHTML = routes.map(r => `
             <tr>
-                <td>${r.route_id}<\/td>
-                <td>${r.route_number}<\/td>
-                <td>${r.route_name}<\/td>
-                <td>${r.transport_type_name}<\/td>
+                <td>${r.route_id}</td>
+                <td>${r.route_number}</td>
+                <td>${r.route_name}</td>
+                <td>${r.transport_type_name}</td>
                 <td>
-                    <button class="btn-edit" onclick="editRoute(${r.route_id})">Изменить<\/button>
-                    <button class="btn-danger" onclick="deleteRoute(${r.route_id})">Удалить<\/button>
-                 <\/td>
-             <\/tr>
+                    <button class="btn-edit" onclick="editRoute(${r.route_id})">Изменить</button>
+                    <button class="btn-danger" onclick="deleteRoute(${r.route_id})">Удалить</button>
+                </td>
+            </tr>
         `).join('');
     } catch (error) {
         console.error('Ошибка:', error);
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Ошибка загрузки<\/td><\/tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Ошибка загрузки</td></tr>';
     }
 }
 
@@ -368,14 +368,10 @@ function showMessage(message, type) {
 
 // ========== ИНИЦИАЛИЗАЦИЯ АДМИНИСТРАТОРА ==========
 function initAdmin() {
-    // Инициализация общих функций из dispatcher.js
-    // Они уже должны быть вызваны при загрузке dispatcher.js
-    
     initUserForm();
     initTransportForm();
     initRouteForm();
     
-    // Кнопка добавления пользователя
     const addUserBtn = document.getElementById('add-user-btn');
     if (addUserBtn) {
         addUserBtn.addEventListener('click', () => {
@@ -391,7 +387,6 @@ function initAdmin() {
         });
     }
     
-    // Кнопка добавления транспорта
     const addTransportBtn = document.getElementById('add-transport-btn');
     if (addTransportBtn) {
         addTransportBtn.addEventListener('click', () => {
@@ -406,7 +401,6 @@ function initAdmin() {
         });
     }
     
-    // Кнопка добавления маршрута
     const addRouteBtn = document.getElementById('add-route-btn');
     if (addRouteBtn) {
         addRouteBtn.addEventListener('click', () => {
@@ -419,7 +413,6 @@ function initAdmin() {
         });
     }
     
-    // Загрузка данных для вкладок
     if (document.getElementById('tab-users')) loadUsers();
     if (document.getElementById('tab-transport')) loadTransport();
     if (document.getElementById('tab-routes')) loadRoutes();

@@ -178,3 +178,32 @@
         </form>
     </div>
 </div>
+
+<!-- Модальное окно для добавления/редактирования маршрута -->
+<div id="route-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3 id="route-modal-title">Добавление маршрута</h3>
+        <form id="route-form">
+            <input type="hidden" id="route-id" name="id">
+            <div class="form-group">
+                <label>Номер маршрута</label>
+                <input type="number" id="route-number" name="number" required min="1">
+            </div>
+            <div class="form-group">
+                <label>Название маршрута</label>
+                <input type="text" id="route-name" name="name" required placeholder="Талдом - Дубна">
+            </div>
+            <div class="form-group">
+                <label>Тип транспорта</label>
+                <select id="route-transport-type-id" name="transport_type_id" required>
+                    <option value="">Выберите тип</option>
+                    {% for transport_type in transport_types %}
+                    <option value="{{ transport_type.type_id }}">{{ transport_type.type_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn-primary">Сохранить</button>
+        </form>
+    </div>
+</div>

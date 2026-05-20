@@ -14,6 +14,9 @@ def dispatcher_dashboard():
     conn = get_db_connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     
+    cur.callproc('get_all_routes_admin')
+    routes = cur.fetchall()
+
     cur.callproc('get_all_routes')
     routes = cur.fetchall()
     
@@ -26,6 +29,9 @@ def dispatcher_dashboard():
     cur.callproc('get_all_marker_types')
     marker_types = cur.fetchall()
     
+    cur.callproc('get_all_transport_types')
+    transport_types = cur.fetchall()
+
     cur.close()
     conn.close()
 
@@ -47,8 +53,95 @@ def dispatcher_dashboard():
                          days=days,
                          all_stops=all_stops,
                          marker_types=marker_types,
+                         transport_types=transport_types,
                          search=search_params,
                          user=user_info)
+
+
+# ========== API ДЛЯ УПРАВЛЕНИЯ МАРШРУТАМИ (ДЛЯ ДИСПЕТЧЕРА) ==========
+
+@dispatcher_bp.route('/api/dispatcher/routes', methods=['GET'])
+@login_required
+@role_required(['Администратор', 'Диспетчер'])
+def api_get_routes():
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    cur.callproc('get_all_routes_admin')
+    routes = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
+    return jsonify(routes)
+
+
+@dispatcher_bp.route('/api/dispatcher/routes/<int:route_id>', methods=['GET'])
+@login_required
+@role_required(['Администратор', 'Диспетчер'])
+def api_get_route(route_id):
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    
+    cur.callproc('get_route_by_id', [route_id])
+    route = cur.fetchone()
+    
+    cur.close()
+    conn.close()
+    
+    if not route:
+        return jsonify({'error': 'Маршрут не найден'}), 404
+    
+    return jsonify(route)
+
+
+@dispatcher_bp.route('/api/dispatcher/routes', methods=['POST'])
+@login_required
+@role_required(['Администратор', 'Диспетчер'])
+def api_create_update_route():
+    data = request.json
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    try:
+        cur.callproc('upsert_route', [
+            data.get('id'),
+            data['number'],
+            data['name'],
+            data['transport_type_id']
+        ])
+        conn.commit()
+        success = True
+    except Exception as e:
+        print(f"Ошибка при сохранении маршрута: {e}")
+        conn.rollback()
+        success = False
+    finally:
+        cur.close()
+        conn.close()
+    
+    return jsonify({'success': success})
+
+
+@dispatcher_bp.route('/api/dispatcher/routes/<int:route_id>', methods=['DELETE'])
+@login_required
+@role_required(['Администратор', 'Диспетчер'])
+def api_delete_route(route_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    cur.callproc('delete_route', [route_id])
+    conn.commit()
+    success = cur.fetchone()[0]
+    
+    cur.close()
+    conn.close()
+    
+    if not success:
+        return jsonify({'success': False, 'error': 'Невозможно удалить маршрут. У него есть связанные остановки, расписание или транспорт'}), 400
+    
+    return jsonify({'success': success})
 
 
 # API для расписания
